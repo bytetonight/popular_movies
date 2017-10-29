@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Popular Movies</string>
+    <string name="json_error">Problem parsing JSON results</string>
+    <string name="share_with">Share with</string>
+</resources>

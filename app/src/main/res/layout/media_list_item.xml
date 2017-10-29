@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="handlers"
+            type="android.example.com.popularmovies.handlers.MediaItemHandlers" />
+
+        <variable
+            name="mediaItem"
+            type="android.example.com.popularmovies.models.AbstractMedia" />
+    </data>
+
+    <LinearLayout style="@style/list_item_container">
+
+
+        <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/card_view"
+            style="@style/list_item_card_view"
+            card_view:cardCornerRadius="0dp"
+            card_view:cardUseCompatPadding="true">
+
+            <LinearLayout style="@style/list_item_main_linear">
+
+                <FrameLayout style="@style/list_item_header_container">
+
+                    <ImageView
+                        style="@style/list_item_header_image"
+                        android:contentDescription="@{mediaItem.name}"
+                        app:imageUrl="@{mediaItem.previewImageResourceId}"
+                        tools:src="@drawable/guardians" />
+
+                    <TextView
+                        style="@style/list_item_header_text"
+                        android:text="@{mediaItem.name}"
+                        tools:text="bla" />
+                </FrameLayout>
+
+                <TextView
+                    style="@style/list_item_teaser_text"
+                    android:text="@{mediaItem.name}"
+                    tools:text="bla" />
+
+                <LinearLayout style="@style/list_item_action_container">
+
+                    <TextView
+                        android:id="@+id/more"
+                        style="@style/list_item_action_text_blue"
+                        android:onClick="@{(v) -> handlers.onClickLearnMore(v, mediaItem)}"
+                        android:text="bla" />
+
+                    <TextView
+                        style="@style/list_item_action_text_blue"
+                        android:onClick="@{(v) -> handlers.sharePoi(v, mediaItem)}"
+                        android:text="bla" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+    </LinearLayout>
+</layout>
