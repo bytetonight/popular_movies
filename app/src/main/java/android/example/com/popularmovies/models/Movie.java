@@ -1,72 +1,160 @@
 package android.example.com.popularmovies.models;
 
-import android.content.Context;
-import android.databinding.BindingAdapter;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.widget.ImageView;
-
-import com.bumptech.glide.Glide;
-
 import java.util.List;
 
+import android.databinding.BindingAdapter;
+import android.example.com.popularmovies.R;
+import android.example.com.popularmovies.config.Config;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 /**
- * Created by ByteTonight on 26.10.2017.
- *
- * https://www.themoviedb.org/documentation/api
+ * Representation (model) of a Movie with all its properties as found in the JSON results
+ * Created with http://www.jsonschema2pojo.org/
+ * because why have things the hard way if you can have them easy ?
  */
 
-public class Movie implements AbstractMedia, Parcelable {
+public class Movie implements AbstractMedia, Parcelable
+{
 
-    public static final Creator<Movie> CREATOR =
-            new Creator<Movie>() {
-
-                @Override
-                public Movie createFromParcel(Parcel source) {
-                    return new Movie(source);
-                }
-
-                @Override
-                public Movie[] newArray(int size) {
-                    return new Movie[size];
-                }
-            };
-
-
-    private Context context;
-    private boolean isAdultRated;
+    @SerializedName("adult")
+    @Expose
+    private Boolean adult;
+    @SerializedName("backdrop_path")
+    @Expose
     private String backdropPath;
-    private Collection belongsToCollection;
-    private int budget;
-    private List<Genre> genres;
+    @SerializedName("belongs_to_collection")
+    @Expose
+    private BelongsToCollection belongsToCollection;
+    @SerializedName("budget")
+    @Expose
+    private Integer budget;
+    @SerializedName("genres")
+    @Expose
+    private List<Genre> genres = null;
+    @SerializedName("homepage")
+    @Expose
     private String homepage;
-    private int id;
+    @SerializedName("id")
+    @Expose
+    private Integer id;
+    @SerializedName("imdb_id")
+    @Expose
     private String imdbId;
+    @SerializedName("original_language")
+    @Expose
     private String originalLanguage;
+    @SerializedName("original_title")
+    @Expose
     private String originalTitle;
+    @SerializedName("overview")
+    @Expose
     private String overview;
-    private double popularity;
-    private String poster_path;
+    @SerializedName("popularity")
+    @Expose
+    private Double popularity;
+    @SerializedName("poster_path")
+    @Expose
+    private String posterPath;
+    @SerializedName("production_companies")
+    @Expose
+    private List<ProductionCompany> productionCompanies = null;
+    @SerializedName("production_countries")
+    @Expose
+    private List<ProductionCountry> productionCountries = null;
+    @SerializedName("release_date")
+    @Expose
+    private String releaseDate;
+    @SerializedName("revenue")
+    @Expose
+    private Integer revenue;
+    @SerializedName("runtime")
+    @Expose
+    private Integer runtime;
+    @SerializedName("spoken_languages")
+    @Expose
+    private List<SpokenLanguage> spokenLanguages = null;
+    @SerializedName("status")
+    @Expose
+    private String status;
+    @SerializedName("tagline")
+    @Expose
+    private String tagline;
+    @SerializedName("title")
+    @Expose
+    private String title;
+    @SerializedName("video")
+    @Expose
+    private Boolean video;
+    @SerializedName("vote_average")
+    @Expose
+    private Double voteAverage;
+    @SerializedName("vote_count")
+    @Expose
+    private Integer voteCount;
+    public final static Parcelable.Creator<Movie> CREATOR = new Creator<Movie>() {
 
 
-    public Movie(Context context) {
-        this.context = context;
+        @SuppressWarnings({
+                "unchecked"
+        })
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        public Movie[] newArray(int size) {
+            return (new Movie[size]);
+        }
+
+    };
+
+    protected Movie(Parcel in) {
+        this.adult = ((Boolean) in.readValue((Boolean.class.getClassLoader())));
+        this.backdropPath = ((String) in.readValue((String.class.getClassLoader())));
+        this.belongsToCollection = ((BelongsToCollection) in.readValue((BelongsToCollection.class.getClassLoader())));
+        this.budget = ((Integer) in.readValue((Integer.class.getClassLoader())));
+        in.readList(this.genres, (android.example.com.popularmovies.models.Genre.class.getClassLoader()));
+        this.homepage = ((String) in.readValue((String.class.getClassLoader())));
+        this.id = ((Integer) in.readValue((Integer.class.getClassLoader())));
+        this.imdbId = ((String) in.readValue((String.class.getClassLoader())));
+        this.originalLanguage = ((String) in.readValue((String.class.getClassLoader())));
+        this.originalTitle = ((String) in.readValue((String.class.getClassLoader())));
+        this.overview = ((String) in.readValue((String.class.getClassLoader())));
+        this.popularity = ((Double) in.readValue((Double.class.getClassLoader())));
+        this.posterPath = ((String) in.readValue((String.class.getClassLoader())));
+        in.readList(this.productionCompanies, (android.example.com.popularmovies.models.ProductionCompany.class.getClassLoader()));
+        in.readList(this.productionCountries, (android.example.com.popularmovies.models.ProductionCountry.class.getClassLoader()));
+        this.releaseDate = ((String) in.readValue((String.class.getClassLoader())));
+        this.revenue = ((Integer) in.readValue((Integer.class.getClassLoader())));
+        this.runtime = ((Integer) in.readValue((Integer.class.getClassLoader())));
+        in.readList(this.spokenLanguages, (android.example.com.popularmovies.models.SpokenLanguage.class.getClassLoader()));
+        this.status = ((String) in.readValue((String.class.getClassLoader())));
+        this.tagline = ((String) in.readValue((String.class.getClassLoader())));
+        this.title = ((String) in.readValue((String.class.getClassLoader())));
+        this.video = ((Boolean) in.readValue((Boolean.class.getClassLoader())));
+        this.voteAverage = ((Double) in.readValue((Double.class.getClassLoader())));
+        this.voteCount = ((Integer) in.readValue((Integer.class.getClassLoader())));
     }
 
-    public Movie(Parcel parcel) {
-        title = parcel.readString();
-        parcel.readStringList(authors);
-        description = parcel.readString();
-        thumbnailLink = parcel.readString();
+    public Movie() {
     }
 
-
-    public boolean isAdultRated() {
-        return isAdultRated;
+    public Boolean getAdult() {
+        return adult;
     }
 
-    public void setAdultRated(boolean adultRated) {
-        isAdultRated = adultRated;
+    public void setAdult(Boolean adult) {
+        this.adult = adult;
     }
 
     public String getBackdropPath() {
@@ -77,19 +165,19 @@ public class Movie implements AbstractMedia, Parcelable {
         this.backdropPath = backdropPath;
     }
 
-    public Collection getBelongsToCollection() {
+    public BelongsToCollection getBelongsToCollection() {
         return belongsToCollection;
     }
 
-    public void setBelongsToCollection(Collection belongsToCollection) {
+    public void setBelongsToCollection(BelongsToCollection belongsToCollection) {
         this.belongsToCollection = belongsToCollection;
     }
 
-    public int getBudget() {
+    public Integer getBudget() {
         return budget;
     }
 
-    public void setBudget(int budget) {
+    public void setBudget(Integer budget) {
         this.budget = budget;
     }
 
@@ -109,11 +197,11 @@ public class Movie implements AbstractMedia, Parcelable {
         this.homepage = homepage;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -149,64 +237,171 @@ public class Movie implements AbstractMedia, Parcelable {
         this.overview = overview;
     }
 
-    public double getPopularity() {
+    public Double getPopularity() {
         return popularity;
     }
 
-    public void setPopularity(double popularity) {
+    public void setPopularity(Double popularity) {
         this.popularity = popularity;
     }
 
-    public String getPoster_path() {
-        return poster_path;
+    public String getPosterPath() {
+        return posterPath;
     }
 
-    public void setPoster_path(String poster_path) {
-        this.poster_path = poster_path;
+    public void setPosterPath(String posterPath) {
+        this.posterPath = posterPath;
     }
 
-    public String getName() {
-        return original_title;
+    public List<ProductionCompany> getProductionCompanies() {
+        return productionCompanies;
     }
 
-    public String  getPreviewImageResourceId() {
-        return poster_path;
+    public void setProductionCompanies(List<ProductionCompany> productionCompanies) {
+        this.productionCompanies = productionCompanies;
     }
 
-    /**
-     * Describe the kinds of special objects contained in this Parcelable
-     * instance's marshaled representation. For example, if the object will
-     * include a file descriptor in the output of {@link #writeToParcel(Parcel, int)},
-     * the return value of this method must include the
-     * {@link #CONTENTS_FILE_DESCRIPTOR} bit.
-     *
-     * @return a bitmask indicating the set of special object types marshaled
-     * by this Parcelable object instance.
-     */
-    @Override
+    public List<ProductionCountry> getProductionCountries() {
+        return productionCountries;
+    }
+
+    public void setProductionCountries(List<ProductionCountry> productionCountries) {
+        this.productionCountries = productionCountries;
+    }
+
+    public String getReleaseDate() {
+        return releaseDate;
+    }
+
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    public Integer getRevenue() {
+        return revenue;
+    }
+
+    public void setRevenue(Integer revenue) {
+        this.revenue = revenue;
+    }
+
+    public Integer getRuntime() {
+        return runtime;
+    }
+
+    public void setRuntime(Integer runtime) {
+        this.runtime = runtime;
+    }
+
+    public List<SpokenLanguage> getSpokenLanguages() {
+        return spokenLanguages;
+    }
+
+    public void setSpokenLanguages(List<SpokenLanguage> spokenLanguages) {
+        this.spokenLanguages = spokenLanguages;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getTagline() {
+        return tagline;
+    }
+
+    public void setTagline(String tagline) {
+        this.tagline = tagline;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Boolean getVideo() {
+        return video;
+    }
+
+    public void setVideo(Boolean video) {
+        this.video = video;
+    }
+
+    public Double getVoteAverage() {
+        return voteAverage;
+    }
+
+    public void setVoteAverage(Double voteAverage) {
+        this.voteAverage = voteAverage;
+    }
+
+    public Integer getVoteCount() {
+        return voteCount;
+    }
+
+    public void setVoteCount(Integer voteCount) {
+        this.voteCount = voteCount;
+    }
+
+
+    @BindingAdapter("bind:imageUrl")
+    public static void getPreviewImage(ImageView imageView, String imageUri) {
+        if (imageUri == null || imageUri.equals(""))
+            return;
+        final ProgressBar loadingIndicator = imageView.getRootView().findViewById(R.id.loading_indicator);
+        Glide.with(imageView.getContext())
+                .load(Config.IMAGE_API_ENDPOINT + imageUri)
+                .listener(new RequestListener<String, GlideDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        loadingIndicator.setVisibility(View.GONE);
+                        return false;
+                    }
+                })
+                .into(imageView);
+    }
+
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeValue(adult);
+        dest.writeValue(backdropPath);
+        dest.writeValue(belongsToCollection);
+        dest.writeValue(budget);
+        dest.writeList(genres);
+        dest.writeValue(homepage);
+        dest.writeValue(id);
+        dest.writeValue(imdbId);
+        dest.writeValue(originalLanguage);
+        dest.writeValue(originalTitle);
+        dest.writeValue(overview);
+        dest.writeValue(popularity);
+        dest.writeValue(posterPath);
+        dest.writeList(productionCompanies);
+        dest.writeList(productionCountries);
+        dest.writeValue(releaseDate);
+        dest.writeValue(revenue);
+        dest.writeValue(runtime);
+        dest.writeList(spokenLanguages);
+        dest.writeValue(status);
+        dest.writeValue(tagline);
+        dest.writeValue(title);
+        dest.writeValue(video);
+        dest.writeValue(voteAverage);
+        dest.writeValue(voteCount);
+    }
+
     public int describeContents() {
         return 0;
     }
 
-    /**
-     * Flatten this object in to a Parcel.
-     *
-     * @param dest  The Parcel in which the object should be written.
-     * @param flags Additional flags about how the object should be written.
-     *              May be 0 or {@link #PARCELABLE_WRITE_RETURN_VALUE}.
-     */
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(title);
-        dest.writeStringList(authors);
-        dest.writeString(description);
-        dest.writeString(thumbnailLink);
-    }
-
-    @BindingAdapter("bind:imageUrl")
-    public static void getPreviewImage(ImageView imageView, String previewImgResourceId) {
-        if (previewImgResourceId.equals(""))
-            return;
-        Glide.with(imageView.getContext()).load(previewImgResourceId).into(imageView);
-    }
 }

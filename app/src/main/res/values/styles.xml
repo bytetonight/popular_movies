@@ -8,18 +8,26 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+
+
+    <style name="prefSettingHeader">
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
+
     <style name="list_item_container">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
-        <item name="android:layout_marginTop">@dimen/list_item_container_top_margin</item>
-        <item name="android:padding">@dimen/list_item_container_padding</item>
+        <item name="android:minHeight">100dp</item>
+        <!--<item name="android:layout_marginTop">@dimen/list_item_container_top_margin</item>
+        <item name="android:padding">@dimen/list_item_container_padding</item>-->
     </style>
 
     <style name="list_item_card_view">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">center</item>
+        <!--<item name="android:visibility">gone</item>-->
     </style>
 
     <style name="list_item_main_linear">
@@ -30,15 +38,17 @@
 
     <style name="list_item_header_container">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/list_item_header_height</item>
+        <item name="android:layout_height">match_parent</item>
+        <!--<item name="android:layout_height">@dimen/list_item_header_height</item>-->
     </style>
 
     <style name="list_item_header_image">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:adjustViewBounds">true</item>
         <item name="android:background">@android:color/transparent</item>
-        <item name="android:scaleType">centerCrop</item>
+        <item name="android:scaleType"> fitCenter</item>
+        <item name="android:layout_margin">4dp</item>
     </style>
 
     <style name="list_item_header_text">

@@ -6,46 +6,46 @@ import android.os.Parcelable.Creator;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Genre implements Parcelable
+public class SpokenLanguage implements Parcelable
 {
 
-    @SerializedName("id")
+    @SerializedName("iso_639_1")
     @Expose
-    private Integer id;
+    private String iso6391;
     @SerializedName("name")
     @Expose
     private String name;
-    public final static Parcelable.Creator<Genre> CREATOR = new Creator<Genre>() {
+    public final static Parcelable.Creator<SpokenLanguage> CREATOR = new Creator<SpokenLanguage>() {
 
 
         @SuppressWarnings({
                 "unchecked"
         })
-        public Genre createFromParcel(Parcel in) {
-            return new Genre(in);
+        public SpokenLanguage createFromParcel(Parcel in) {
+            return new SpokenLanguage(in);
         }
 
-        public Genre[] newArray(int size) {
-            return (new Genre[size]);
+        public SpokenLanguage[] newArray(int size) {
+            return (new SpokenLanguage[size]);
         }
 
     }
             ;
 
-    protected Genre(Parcel in) {
-        this.id = ((Integer) in.readValue((Integer.class.getClassLoader())));
+    protected SpokenLanguage(Parcel in) {
+        this.iso6391 = ((String) in.readValue((String.class.getClassLoader())));
         this.name = ((String) in.readValue((String.class.getClassLoader())));
     }
 
-    public Genre() {
+    public SpokenLanguage() {
     }
 
-    public Integer getId() {
-        return id;
+    public String getIso6391() {
+        return iso6391;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setIso6391(String iso6391) {
+        this.iso6391 = iso6391;
     }
 
     public String getName() {
@@ -57,7 +57,7 @@ public class Genre implements Parcelable
     }
 
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeValue(id);
+        dest.writeValue(iso6391);
         dest.writeValue(name);
     }
 

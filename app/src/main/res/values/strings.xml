@@ -2,4 +2,15 @@
     <string name="app_name">Popular Movies</string>
     <string name="json_error">Problem parsing JSON results</string>
     <string name="share_with">Share with</string>
+    <string-array name="movie_preference_name">
+        <!--<item>Latest</item>-->
+        <item>Now playing</item>
+        <item>Popular</item>
+        <item>Top rated</item>
+        <item>Upcoming</item>
+    </string-array>
+    <string name="preference_file_key">234jh2349sd</string>
+    <string name="menu_listing_preferences">Listing Preferences</string>
+    <string name="movie_listing_preference">Movie Listing Preference</string>
+
 </resources>

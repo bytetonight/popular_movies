@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.example.com.popularmovies.DetailsActivity;
 import android.example.com.popularmovies.R;
 import android.example.com.popularmovies.models.AbstractMedia;
+import android.example.com.popularmovies.models.Movie;
 import android.view.View;
 
 
@@ -14,7 +15,7 @@ import android.view.View;
 
 public class MediaItemHandlers {
 
-    public void onClickLearnMore(View v, AbstractMedia absMedia) {
+    public void onClickViewDetails(View v, AbstractMedia absMedia) {
         Context context = v.getContext(); //quite cool hey ?
         Intent mediaDetails = new Intent(context, DetailsActivity.class);
         mediaDetails.putExtra("absMedia", absMedia);
@@ -22,10 +23,15 @@ public class MediaItemHandlers {
     }
 
     public void sharePoi(View v, AbstractMedia absMedia) {
+
         Context context = v.getContext();
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, absMedia.getName());
+
+
+        if (absMedia instanceof Movie) {
+            sendIntent.putExtra(Intent.EXTRA_TEXT, ((Movie) absMedia).getOriginalTitle());
+        }
         sendIntent.setType("text/plain");
         context.startActivity(
                 Intent.createChooser(

@@ -6,46 +6,46 @@ import android.os.Parcelable.Creator;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Genre implements Parcelable
+public class ProductionCountry implements Parcelable
 {
 
-    @SerializedName("id")
+    @SerializedName("iso_3166_1")
     @Expose
-    private Integer id;
+    private String iso31661;
     @SerializedName("name")
     @Expose
     private String name;
-    public final static Parcelable.Creator<Genre> CREATOR = new Creator<Genre>() {
+    public final static Parcelable.Creator<ProductionCountry> CREATOR = new Creator<ProductionCountry>() {
 
 
         @SuppressWarnings({
                 "unchecked"
         })
-        public Genre createFromParcel(Parcel in) {
-            return new Genre(in);
+        public ProductionCountry createFromParcel(Parcel in) {
+            return new ProductionCountry(in);
         }
 
-        public Genre[] newArray(int size) {
-            return (new Genre[size]);
+        public ProductionCountry[] newArray(int size) {
+            return (new ProductionCountry[size]);
         }
 
     }
             ;
 
-    protected Genre(Parcel in) {
-        this.id = ((Integer) in.readValue((Integer.class.getClassLoader())));
+    protected ProductionCountry(Parcel in) {
+        this.iso31661 = ((String) in.readValue((String.class.getClassLoader())));
         this.name = ((String) in.readValue((String.class.getClassLoader())));
     }
 
-    public Genre() {
+    public ProductionCountry() {
     }
 
-    public Integer getId() {
-        return id;
+    public String getIso31661() {
+        return iso31661;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setIso31661(String iso31661) {
+        this.iso31661 = iso31661;
     }
 
     public String getName() {
@@ -57,7 +57,7 @@ public class Genre implements Parcelable
     }
 
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeValue(id);
+        dest.writeValue(iso31661);
         dest.writeValue(name);
     }
 

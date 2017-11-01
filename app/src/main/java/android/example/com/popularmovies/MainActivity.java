@@ -1,17 +1,35 @@
 package android.example.com.popularmovies;
 
-import android.example.com.popularmovies.data.MoviesLoader;
-import android.example.com.popularmovies.models.Movie;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.example.com.popularmovies.adapters.MediaAdapter;
+import android.example.com.popularmovies.adapters.RestAdapter;
+import android.example.com.popularmovies.config.Config;
+import android.example.com.popularmovies.exceptions.NoConnectionException;
+import android.example.com.popularmovies.models.MovieListingPreference;
+import android.example.com.popularmovies.models.MovieResults;
 import android.example.com.popularmovies.utils.MessageEvent;
-import android.example.com.popularmovies.utils.UriMaker;
-import android.os.Parcelable;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
+import android.example.com.popularmovies.utils.Utils;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,8 +40,11 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<List<Movie>>{
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class MainActivity extends AppCompatActivity {
 
 
     // Useful information
@@ -36,24 +57,52 @@ public class MainActivity extends AppCompatActivity
      * having the following content
      * TmbdApiKey="INSERT YOUR API KEY HERE"
      * */
+    private List<MovieListingPreference> movieListingPreferences = new ArrayList<>();
+    private RestAdapter restAdapter;
+    private MediaAdapter mediaAdapter;
+    private MovieResults movieResults;
+    private String moviePreference;
+    private int moviePreferencePosition = 0;
 
-    private static final String MOVIES_LIST = "movies";
-    private static final String URI_KEY = "Uri";
-
-    private static final int MOVIES_LOADER_ID = 1;
-    private List<Movie> movies = new ArrayList<>();
-
-    private EditText searchField;
-    private ImageView imageViewSearch;
-    private ProgressBar loadingIndicator;
-    private TextView emptyText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        prepareLoader();
+
+        prepareDiscoveryPreferences();
+
+
+        moviePreference = Utils.readStringFromPreferences(this, "moviePreference");
+        String posString = Utils.readStringFromPreferences(this, "moviePreferenceNumeric");
+        if (posString != null && !posString.isEmpty())
+            moviePreferencePosition =  Integer.valueOf(posString);
+        else
+            moviePreferencePosition = 0;
+        //Integer.valueOf(pref.getString("moviePreferenceNumeric", "0"));
+        int columnCount = 2;
+        switch(getResources().getConfiguration().orientation) {
+            case Configuration.ORIENTATION_PORTRAIT :
+                columnCount = Config.RECYCLERVIEW_COLUMNS_PORTRAIT;
+                break;
+
+            case Configuration.ORIENTATION_LANDSCAPE:
+                columnCount = Config.RECYCLERVIEW_COLUMNS_LAND;
+                break;
+        }
+
+        restAdapter = new RestAdapter();
+        movieResults = new MovieResults();
+        mediaAdapter = new MediaAdapter(movieResults);
+        RecyclerView recyclerView = findViewById(R.id.movies_recyclerview);
+        // Using a GridLayoutManager for columns instead of the default LinearLayoutManager
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(MainActivity.this, columnCount);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(mediaAdapter);
+
+        listMoviesByPreference();
+
 
 
     }
@@ -61,36 +110,17 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(MOVIES_LIST, new ArrayList<Parcelable>(movies));
+        outState.putString("moviePreference", moviePreference);
+        //outState.putParcelableArrayList(MOVIES_LIST, new ArrayList<Parcelable>(movies));
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        movies = savedInstanceState.getParcelableArrayList(MOVIES_LIST);
+        moviePreference = savedInstanceState.getString("moviePreference");
+        //movies = savedInstanceState.getParcelableArrayList(MOVIES_LIST);
 
     }
-    private String getApiTestResponse() {
-        if (BuildConfig.TMDB_API_KEY == null)
-        {
-            Toast.makeText(this, "This App requires an API-key", Toast.LENGTH_SHORT).show();
-            return null;
-        }
-        return UriMaker.getTestUrl();
-    }
-
-
-    private void prepareLoader() {
-        Bundle args = new Bundle();
-        args.putString(URI_KEY, getApiTestResponse());
-
-        LoaderManager loaderManager = getSupportLoaderManager();
-        loaderManager.initLoader(MOVIES_LOADER_ID, args, MainActivity.this);
-        if (loaderManager.getLoader(MOVIES_LOADER_ID).isStarted())
-            loaderManager.restartLoader(MOVIES_LOADER_ID, args, MainActivity.this);
-    }
-
-
 
     // region GreenRobot EventBus Setup.
     // Why ? To inform the user when something goes wrong in the loader running on a separate thread
@@ -114,50 +144,116 @@ public class MainActivity extends AppCompatActivity
     // endregion
 
     /**
-     * Instantiate and return a new Loader for the given ID.
      *
-     * @param id   The ID whose loader is to be created.
-     * @param args Any arguments supplied by the caller.
-     * @return Return a new Loader instance that is ready to start loading.
      */
-    @Override
-    public Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
-        if (args.isEmpty())
-            return null;
-        //loadingIndicator.setVisibility(View.VISIBLE);
-        return new MoviesLoader(MainActivity.this, args.getString(URI_KEY));
-    }
+    private void listMoviesByPreference() {
+        try {
+            Call<MovieResults> discoverMoviesCall = restAdapter.getInstance(MainActivity.this)
+                    .listMoviesByPreference(moviePreference, BuildConfig.TMDB_API_KEY);
 
-    /**
-     * Called when a previously created loader has finished its load.
-     *
-     * @param loader The Loader that has finished.
-     * @param data   The data generated by the Loader.
-     */
-    @Override
-    public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> data) {
-        //loadingIndicator.setVisibility(View.GONE);
-        if (data == null || data.isEmpty()) {
-            movies.clear();
-            //emptyText.setText("No records found");
+            discoverMoviesCall.enqueue(new Callback<MovieResults>() {
+                @Override
+                public void onResponse(Call<MovieResults> call, Response<MovieResults> response) {
+                    if (response.isSuccessful()) {
+                        movieResults = response.body();
+                        mediaAdapter.setResults(movieResults);
+                        mediaAdapter.notifyDataSetChanged();
+                        Toast.makeText(MainActivity.this, "discoverMovies success: ", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MovieResults> call, Throwable t) {
+                    Toast.makeText(MainActivity.this, "discoverMovies failed: "+t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
         }
-        else {
-            movies = data;
-            //prepareRecyclerView();
+        catch (NoConnectionException ex) {
+            Toast.makeText(MainActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
         }
-        //adapter.notifyDataSetChanged();
     }
 
-    /**
-     * Called when a previously created loader is being reset, and thus
-     * making its data unavailable.  The application should at this point
-     * remove any references it has to the Loader's data.
-     *
-     * @param loader The Loader that is being reset.
-     */
     @Override
-    public void onLoaderReset(Loader<List<Movie>> loader) {
-
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.listing_preferences:
+                showMoviePrefsDialog();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+
+
+
+    private void prepareDiscoveryPreferences() {
+        String[] prefKeysArray = getResources().getStringArray(R.array.movie_preferences_values);
+        String[] prefValuesArray = getResources().getStringArray(R.array.movie_preference_name);
+        for (int current = 0; current < prefKeysArray.length; ++current) {
+            movieListingPreferences.add(new MovieListingPreference(prefKeysArray[current], prefValuesArray[current]));
+        }
+    }
+
+    private void showMoviePrefsDialog() {
+
+        Log.v("###","showMoviePrefsDialog");
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View view = inflater.inflate(R.layout.preferences_dialog, null);
+
+
+        Spinner listingPrefsSpinner = (Spinner) view.findViewById(R.id.movieDiscoveryPreference);
+
+        listingPrefsSpinner.setOnItemSelectedListener(sectionSelectListener);
+
+        ArrayAdapter<MovieListingPreference> sectionArrayAdapter = new ArrayAdapter<>(MainActivity.this,
+                android.R.layout.simple_spinner_dropdown_item, movieListingPreferences);
+        sectionArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        listingPrefsSpinner.setAdapter(sectionArrayAdapter);
+        dialogBuilder.setView(view);
+        listingPrefsSpinner.setSelection(moviePreferencePosition);
+        dialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int clickedButton) {
+                //loadArticles(currentSection.toString());
+            }
+        });
+        dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int clickedButton) {
+
+            }
+        });
+        AlertDialog b = dialogBuilder.create();
+        b.show();
+    }
+
+    private AdapterView.OnItemSelectedListener sectionSelectListener =
+            new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    if (moviePreferencePosition == position)
+                        return;
+                    MovieListingPreference currentItem = (MovieListingPreference)parent.getItemAtPosition(position);
+                    Utils.writeStringToPreferences(MainActivity.this, "moviePreference", currentItem.getKey());
+                    Utils.writeStringToPreferences(MainActivity.this, "moviePreferenceNumeric", String.valueOf(position));
+                    moviePreferencePosition = position;
+                    moviePreference = currentItem.getKey();
+                    listMoviesByPreference();
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            };
 
 }
