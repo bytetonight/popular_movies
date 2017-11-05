@@ -1,3 +1,12 @@
+/*
+ * PopularMovies by bytetonight
+ * Created for the Udacity (c) Android (c) Developer Nanodegree
+ * This software uses a remote API kindly made accessible by
+ * https://www.themoviedb.org/
+ *
+ * Copyright (c) 2017.
+ */
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
