@@ -61,8 +61,8 @@ public class MainActivity extends AppCompatActivity {
         prepareDiscoveryPreferences();
         moviePreference = Utils.readStringFromPreferences(this, "moviePreference");
 
-        if (moviePreference.isEmpty())
-            moviePreference = movieListingPreferences.get(0).getKey();
+        if (moviePreference == null || moviePreference.isEmpty() || moviePreference.equals("0"))
+            moviePreference = ((MovieListingPreference)movieListingPreferences.get(0)).getKey();
 
         String posString = Utils.readStringFromPreferences(this,
                 "moviePreferenceNumeric");
