@@ -1,12 +1,13 @@
 package android.example.com.popularmovies.models;
 
-import java.util.List;
-
 import android.databinding.BindingAdapter;
 import android.example.com.popularmovies.R;
 import android.example.com.popularmovies.config.Config;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -18,10 +19,14 @@ import com.bumptech.glide.request.target.Target;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 /**
- * Representation (model) of a Movie with all its properties as found in the JSON results
+ * Complete representation (model) of a Movie with all its properties as found in the JSON results
  * Created with http://www.jsonschema2pojo.org/
  * because why have things the hard way if you can have them easy ?
+ * For the purpose of this particular App the model may be overkill
+ * Never the less a great demonstration
  */
 
 public class Movie implements AbstractMedia, Parcelable
@@ -350,22 +355,69 @@ public class Movie implements AbstractMedia, Parcelable
     }
 
 
-    @BindingAdapter("bind:imageUrl")
-    public static void getPreviewImage(ImageView imageView, String imageUri) {
+    /**
+     * Prepares loading of poster images with a width of 342px
+     * When an ImageView in the XML layout contains the attribute app:posterUrl
+     * the binder will know due to the annotation @BindingAdapter("bind:posterUrl")
+     * to call getPosterImage and pass the value of above attribute as a parameter.
+     *
+     * @param imageView is the View to load the image into
+     * @param imageUri is the remote resource location of the image
+     */
+    @BindingAdapter("bind:posterUrl")
+    public static void getPosterImage(ImageView imageView, String imageUri) {
         if (imageUri == null || imageUri.equals(""))
             return;
+        glideImageLoader(imageView, Config.IMAGE_API_ENDPOINT + Config.POSTER_DEFAULT_SIZE + imageUri, false);
+
+    }
+
+    /**
+     * Prepares loading of backdrop images with a width of 700 and something px
+     *
+     * @param imageView is the View to load the image into
+     * @param imageUri is the remote resource location of the image
+     */
+    @BindingAdapter("bind:backdropUrl")
+    public static void getBackdropImage(ImageView imageView, String imageUri) {
+        if (imageUri == null || imageUri.equals(""))
+            return;
+        glideImageLoader(imageView, Config.IMAGE_API_ENDPOINT + Config.BACKDROP_DEFAULT_SIZE + imageUri, true);
+
+    }
+
+    /**
+     * This is the actual loading section for above 2 methods
+     * Why I did it this way ?
+     * To reduce redundant code of course
+     *
+     * @param imageView is the View to load the image into
+     * @param imageUri is the remote resource location of the image
+     * @param colorize determines whether I'm loading a poster or a backdrop image ... sort of
+     */
+    private static void glideImageLoader(final ImageView imageView, String imageUri, final boolean colorize) {
         final ProgressBar loadingIndicator = imageView.getRootView().findViewById(R.id.loading_indicator);
+
+        Log.v("Movie", imageUri);
         Glide.with(imageView.getContext())
-                .load(Config.IMAGE_API_ENDPOINT + imageUri)
+                .load( imageUri)
+                // Glide V3 code
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
-                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                    public boolean onException(Exception e, String model,
+                                               Target<GlideDrawable> target,
+                                               boolean isFirstResource) {
                         return false;
                     }
 
                     @Override
-                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                    public boolean onResourceReady(GlideDrawable resource, String model,
+                                                   Target<GlideDrawable> target,
+                                                   boolean isFromMemoryCache,
+                                                   boolean isFirstResource) {
                         loadingIndicator.setVisibility(View.GONE);
+                        if (colorize)
+                            imageView.setColorFilter(Color.LTGRAY, PorterDuff.Mode.DARKEN);
                         return false;
                     }
                 })

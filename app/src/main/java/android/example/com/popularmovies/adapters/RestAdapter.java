@@ -1,9 +1,6 @@
 package android.example.com.popularmovies.adapters;
 
-import android.accounts.NetworkErrorException;
-import android.app.Application;
 import android.content.Context;
-import android.example.com.popularmovies.MainActivity;
 import android.example.com.popularmovies.config.Config;
 import android.example.com.popularmovies.data.TmdbAPI;
 import android.example.com.popularmovies.exceptions.NoConnectionException;

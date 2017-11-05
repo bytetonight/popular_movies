@@ -4,15 +4,11 @@
     android:layout_height="match_parent">
 
    <TextView
-       style=""
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content"
-       android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-       android:text="@string/movie_listing_preference"/>
+       android:text="@string/movie_listing_preference"
+       style="@style/preferences_spinner_header" />
 
    <Spinner
        android:id="@+id/movieDiscoveryPreference"
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content" />
+       style="@style/preferences_spinner" />
 
 </LinearLayout>

@@ -1,9 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="android.example.com.popularmovies.DetailsActivity">
+    xmlns:tools="http://schemas.android.com/tools">
 
-</android.support.constraint.ConstraintLayout>
+    <data>
+        <variable
+            name="handlers"
+            type="android.example.com.popularmovies.handlers.MediaItemHandlers" />
+
+        <variable
+            name="mediaItem"
+            type="android.example.com.popularmovies.models.Movie" />
+    </data>
+
+    <ScrollView style="@style/main_scroll_view">
+
+        <!-- ScrollView 1st-Child needs LinearLayout -->
+        <LinearLayout style="@style/scrollview_first_child">
+
+            <!-- Main Content Container -->
+            <RelativeLayout style="@style/main_content_container">
+
+                <!-- Backdrop Image-->
+                <ImageView
+                    android:contentDescription="@{mediaItem.originalTitle}"
+                    app:backdropUrl="@{mediaItem.backdropPath}"
+                    tools:src="@drawable/thor_backdrop"
+                    style="@style/backdrop_image" />
+
+                <!-- Pseudo Image Filter -->
+                <View style="@style/pseudo_image_effect" />
+
+                <!-- Inner Content Container -->
+                <LinearLayout style="@style/inner_content_container">
+
+                    <!-- Content Header with Poster and average Rating -->
+                    <LinearLayout style="@style/content_header">
+
+                        <RelativeLayout
+
+                            style="@style/poster_image_container">
+
+                            <!-- Indeterminate Poster Pseudo Progress -->
+                            <ProgressBar
+                                android:id="@+id/loading_indicator"
+                                style="@style/poster_progress_bar" />
+
+                            <!-- Poster Image -->
+                            <ImageView
+                                android:id="@+id/imageView"
+                                android:contentDescription="@{mediaItem.originalTitle}"
+                                app:posterUrl="@{mediaItem.posterPath}"
+                                tools:src="@drawable/guardians"
+                                style="@style/poster_image" />
+                        </RelativeLayout>
+
+
+                        <TableLayout style="@style/header_table_layout">
+
+                            <TableRow>
+                                <TextView
+                                    android:text="@string/average_rating"
+                                    tools:text="@string/average_rating"
+                                    style="@style/header_table_col1" />
+
+                                <!-- Average User Rating Indicator -->
+                                <com.github.mikephil.charting.charts.PieChart
+                                    android:id="@+id/chart"
+                                    style="@style/average_rating_chart" />
+                            </TableRow>
+
+                            <TableRow>
+                                <TextView
+                                    style="@style/header_table_col1"
+                                    android:text="@string/release_date"
+                                    tools:text="@string/release_date"/>
+
+                                <TextView
+                                    style="@style/detailsText"
+                                    android:text="@{mediaItem.releaseDate}"
+                                    tools:text="2017-10-29"/>
+                            </TableRow>
+                        </TableLayout>
+
+                    </LinearLayout>
+
+                    <!-- Vertical Content -->
+                    <LinearLayout style="@style/details_vertical_content">
+
+                        <TextView
+                            style="@style/detailsText.header"
+                            android:text="@{mediaItem.originalTitle}"
+                            tools:text="bla" />
+
+                        <TextView
+                            style="@style/detailsText"
+                            android:text="@{mediaItem.overview}"
+                            tools:text="bla" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+</layout>

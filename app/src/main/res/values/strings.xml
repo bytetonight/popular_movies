@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Popular Movies</string>
-    <string name="json_error">Problem parsing JSON results</string>
     <string name="share_with">Share with</string>
     <string-array name="movie_preference_name">
         <!--<item>Latest</item>-->
@@ -12,5 +11,11 @@
     <string name="preference_file_key">234jh2349sd</string>
     <string name="menu_listing_preferences">Listing Preferences</string>
     <string name="movie_listing_preference">Movie Listing Preference</string>
+    <string name="release_date">Release Date</string>
+    <string name="average_rating">Average Rating</string>
+    <string name="toast_load_movies_fail">discoverMovies failed:</string>
+    <string name="toast_no_internet">No Internet Connection</string>
+    <string name="dlg_btn_ok">Ok</string>
+    <string name="dlg_btn_cancel">Cancel</string>
 
 </resources>

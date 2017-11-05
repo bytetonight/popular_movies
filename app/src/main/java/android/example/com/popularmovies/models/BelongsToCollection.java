@@ -41,8 +41,8 @@ public class BelongsToCollection implements Parcelable
     protected BelongsToCollection(Parcel in) {
         this.id = ((Integer) in.readValue((Integer.class.getClassLoader())));
         this.name = ((String) in.readValue((String.class.getClassLoader())));
-        this.posterPath = ((Object) in.readValue((Object.class.getClassLoader())));
-        this.backdropPath = ((Object) in.readValue((Object.class.getClassLoader())));
+        this.posterPath = in.readValue((Object.class.getClassLoader()));
+        this.backdropPath = in.readValue((Object.class.getClassLoader()));
     }
 
     public BelongsToCollection() {
