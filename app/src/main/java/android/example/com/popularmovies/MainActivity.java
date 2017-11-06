@@ -53,7 +53,8 @@ public class MainActivity extends AppCompatActivity {
      * Requires a file named keystore.properties to exist within the project root
      * having the following content
      * TmbdApiKey="INSERT YOUR API KEY HERE"
-     * */
+     */
+    private static final String TAG = MainActivity.class.getName();
     private List<MovieListingPreference> movieListingPreferences = new ArrayList<>();
     private RestAdapter restAdapter;
     private MediaAdapter mediaAdapter;
@@ -71,19 +72,19 @@ public class MainActivity extends AppCompatActivity {
         moviePreference = Utils.readStringFromPreferences(this, "moviePreference");
 
         if (moviePreference == null || moviePreference.isEmpty() || moviePreference.equals("0"))
-            moviePreference = ((MovieListingPreference)movieListingPreferences.get(0)).getKey();
+            moviePreference = ((MovieListingPreference) movieListingPreferences.get(0)).getKey();
 
         String posString = Utils.readStringFromPreferences(this,
                 "moviePreferenceNumeric");
 
         if (posString != null && !posString.isEmpty())
-            moviePreferencePosition =  Integer.valueOf(posString);
+            moviePreferencePosition = Integer.valueOf(posString);
         else
             moviePreferencePosition = 0;
 
         int columnCount = 2;
-        switch(getResources().getConfiguration().orientation) {
-            case Configuration.ORIENTATION_PORTRAIT :
+        switch (getResources().getConfiguration().orientation) {
+            case Configuration.ORIENTATION_PORTRAIT:
                 columnCount = Config.RECYCLERVIEW_COLUMNS_PORTRAIT;
                 break;
 
@@ -93,7 +94,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         restAdapter = new RestAdapter();
-        movieResults = new MovieResults();
+        if (savedInstanceState != null) {
+            movieResults = savedInstanceState.getParcelable("movieResults");
+        } else {
+            movieResults = new MovieResults();
+        }
+
         mediaAdapter = new MediaAdapter(movieResults);
         RecyclerView recyclerView = findViewById(R.id.movies_recyclerview);
 
@@ -103,21 +109,24 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(mediaAdapter);
 
-        listMoviesByPreference();
+        if (savedInstanceState == null)
+            listMoviesByPreference();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("moviePreference", moviePreference);
+        outState.putParcelable("movieResults", movieResults);
+        Log.d(TAG, "onSaveInstanceState: ");
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         moviePreference = savedInstanceState.getString("moviePreference");
+        Log.d(TAG, "onRestoreInstanceState: ");
     }
-
 
 
     /**
@@ -127,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             Call<MovieResults> discoverMoviesCall =
                     restAdapter.getInstance(MainActivity.this)
-                    .listMoviesByPreference(moviePreference, BuildConfig.TMDB_API_KEY);
+                            .listMoviesByPreference(moviePreference, BuildConfig.TMDB_API_KEY);
 
             discoverMoviesCall.enqueue(new Callback<MovieResults>() {
                 @Override
@@ -142,12 +151,11 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(Call<MovieResults> call, Throwable t) {
                     Toast.makeText(MainActivity.this,
-                            getString(R.string.toast_load_movies_fail)+t.getMessage(),
+                            getString(R.string.toast_load_movies_fail) + t.getMessage(),
                             Toast.LENGTH_SHORT).show();
                 }
             });
-        }
-        catch (NoConnectionException ex) {
+        } catch (NoConnectionException ex) {
             Toast.makeText(MainActivity.this,
                     R.string.toast_no_internet, Toast.LENGTH_SHORT).show();
         }
@@ -188,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showMoviePrefsDialog() {
 
-        Log.v("###","showMoviePrefsDialog");
+        Log.v("###", "showMoviePrefsDialog");
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
         final View view = inflater.inflate(R.layout.preferences_dialog, null);
@@ -200,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayAdapter<MovieListingPreference> sectionArrayAdapter =
                 new ArrayAdapter<>(MainActivity.this,
-                android.R.layout.simple_spinner_dropdown_item, movieListingPreferences);
+                        android.R.layout.simple_spinner_dropdown_item, movieListingPreferences);
         sectionArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         listingPrefsSpinner.setAdapter(sectionArrayAdapter);
         dialogBuilder.setView(view);
@@ -212,10 +220,10 @@ public class MainActivity extends AppCompatActivity {
         });
         dialogBuilder.setNegativeButton(R.string.dlg_btn_cancel,
                 new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int clickedButton) {
+                    public void onClick(DialogInterface dialog, int clickedButton) {
 
-            }
-        });
+                    }
+                });
         AlertDialog b = dialogBuilder.create();
         b.show();
     }
@@ -228,7 +236,7 @@ public class MainActivity extends AppCompatActivity {
                     if (moviePreferencePosition == position)
                         return;
                     MovieListingPreference currentItem =
-                            (MovieListingPreference)parent.getItemAtPosition(position);
+                            (MovieListingPreference) parent.getItemAtPosition(position);
                     Utils.writeStringToPreferences(MainActivity.this,
                             "moviePreference", currentItem.getKey());
                     Utils.writeStringToPreferences(MainActivity.this,

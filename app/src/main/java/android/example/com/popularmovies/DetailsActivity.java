@@ -35,6 +35,11 @@ public class DetailsActivity extends AppCompatActivity {
         // Only if the indices are contained, they will be returned, else 0
         if (senderIntent.hasExtra("absMedia"))
             selectedMovie = senderIntent.getParcelableExtra("absMedia");
+
+        if (savedInstanceState != null) {
+            selectedMovie = savedInstanceState.getParcelable("selectedMovie");
+        }
+
         if (selectedMovie == null) {
             return;
         }
@@ -50,5 +55,9 @@ public class DetailsActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
-
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable("selectedMovie", selectedMovie);
+    }
 }
