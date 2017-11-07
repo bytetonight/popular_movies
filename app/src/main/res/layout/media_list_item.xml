@@ -32,7 +32,6 @@
             style="@style/list_item_header_image"
             android:contentDescription="@{mediaItem.originalTitle}"
             android:onClick="@{(v) -> handlers.onClickViewDetails(v, mediaItem)}"
-            android:scaleType="fitCenter"
             app:posterUrl="@{mediaItem.posterPath}"
             tools:src="@drawable/guardians" />
 

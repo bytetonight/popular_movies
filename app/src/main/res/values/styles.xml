@@ -23,17 +23,16 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
         <item name="android:minHeight">100dp</item>
-        <!--<item name="android:layout_marginTop">@dimen/list_item_container_top_margin</item>
-        <item name="android:padding">@dimen/list_item_container_padding</item>-->
+        <item name="android:maxHeight">500dp</item>
+        <item name="android:layout_margin">2dp</item>
     </style>
 
     <style name="list_item_header_image">
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:adjustViewBounds">true</item>
         <item name="android:background">@android:color/transparent</item>
-        <item name="android:scaleType"> fitCenter</item>
-        <item name="android:layout_margin">4dp</item>
+        <item name="android:scaleType">fitCenter</item>
     </style>
 
     <style name="detailsText">
