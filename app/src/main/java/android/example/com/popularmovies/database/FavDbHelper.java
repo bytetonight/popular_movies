@@ -1,0 +1,70 @@
+/*
+ * Copyright (c) 2017. bytetonight@gmail.com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package android.example.com.popularmovies.database;
+
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.example.com.popularmovies.database.FavContract.FavEntry;
+
+
+/**
+ * Database helper for inventory app. Manages database creation and version management.
+ */
+public class FavDbHelper extends SQLiteOpenHelper {
+
+    public static final String LOG_TAG = FavDbHelper.class.getSimpleName();
+
+    /** Name of the database file */
+    private static final String DATABASE_NAME = "tmdb_local.db";
+
+    /**
+     * Database version. If you change the database schema, you must increment the database version.
+     */
+    private static final int DATABASE_VERSION = 1;
+
+    /**
+     * Constructs a new instance of {@link FavDbHelper}.
+     *
+     * @param context of the app
+     */
+    public FavDbHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    /**
+     * This is called when the database is created for the first time.
+     */
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        // Create a String that contains the SQL statement to create the products table
+        String SQL_CREATE_FAVORITES_TABLE =  "CREATE TABLE " + FavEntry.TABLE_NAME + " ("
+                + FavEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + FavEntry.TMDB_MOVIE_ID + " INTEGER NOT NULL, "
+                + FavEntry.COLUMN_MOVIE_NAME + " TEXT NOT NULL, "
+                + FavEntry.COLUMN_MOVIE_POSTER_URL + " INTEGER NOT NULL DEFAULT 0 );";
+
+        // Execute the SQL statement
+        db.execSQL(SQL_CREATE_FAVORITES_TABLE);
+    }
+
+    /**
+     * This is called when the database needs to be upgraded.
+     */
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // The database is still at version 1, so there's nothing to do be done here.
+    }
+}

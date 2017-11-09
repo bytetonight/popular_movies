@@ -10,9 +10,12 @@
 package android.example.com.popularmovies;
 
 import android.app.AlertDialog;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
 import android.content.DialogInterface;
-import android.content.Intent;
+import android.content.Loader;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.example.com.popularmovies.adapters.MediaAdapter;
 import android.example.com.popularmovies.adapters.RestAdapter;
 import android.example.com.popularmovies.config.Config;
@@ -42,7 +45,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class FavoritesActivity extends AppCompatActivity implements
+        LoaderManager.LoaderCallbacks<Cursor>{
 
 
     // Useful information
@@ -55,7 +59,14 @@ public class MainActivity extends AppCompatActivity {
      * having the following content
      * TmbdApiKey="INSERT YOUR API KEY HERE"
      */
-    private static final String TAG = MainActivity.class.getName();
+    private static final String TAG = FavoritesActivity.class.getName();
+
+    /**
+     * Identifier for the product data loader
+     */
+    private static final int PRODUCTS_LOADER_ID = 0;
+    private static final int COUNT_LOADER_ID = 1;
+
     private List<MovieListingPreference> movieListingPreferences = new ArrayList<>();
     private RestAdapter restAdapter;
     private MediaAdapter mediaAdapter;
@@ -106,12 +117,18 @@ public class MainActivity extends AppCompatActivity {
 
         // Using a GridLayoutManager for columns instead of the default LinearLayoutManager
         RecyclerView.LayoutManager layoutManager =
-                new GridLayoutManager(MainActivity.this, columnCount);
+                new GridLayoutManager(FavoritesActivity.this, columnCount);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(mediaAdapter);
 
         if (savedInstanceState == null)
             listMoviesByPreference();
+
+
+        // Kick off the loader to get the amount of records in the database
+        getLoaderManager().initLoader(COUNT_LOADER_ID, null, this);
+        // When {@link onLoadFinished} tells us that above loader has completed
+        // We kick off the actual product loader
     }
 
     @Override
@@ -136,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
     private void listMoviesByPreference() {
         try {
             Call<MovieResults> discoverMoviesCall =
-                    restAdapter.getInstance(MainActivity.this)
+                    restAdapter.getInstance(FavoritesActivity.this)
                             .listMoviesByPreference(moviePreference, BuildConfig.TMDB_API_KEY);
 
             discoverMoviesCall.enqueue(new Callback<MovieResults>() {
@@ -151,13 +168,13 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<MovieResults> call, Throwable t) {
-                    Toast.makeText(MainActivity.this,
+                    Toast.makeText(FavoritesActivity.this,
                             getString(R.string.toast_load_movies_fail) + t.getMessage(),
                             Toast.LENGTH_SHORT).show();
                 }
             });
         } catch (NoConnectionException ex) {
-            Toast.makeText(MainActivity.this,
+            Toast.makeText(FavoritesActivity.this,
                     R.string.toast_no_internet, Toast.LENGTH_SHORT).show();
         }
     }
@@ -175,10 +192,6 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.listing_preferences:
                 showMoviePrefsDialog();
-                return true;
-
-            case R.id.favorites :
-                startActivity(new Intent(this, FavoritesActivity.class), null);
                 return true;
 
             default:
@@ -212,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
         listingPrefsSpinner.setOnItemSelectedListener(sectionSelectListener);
 
         ArrayAdapter<MovieListingPreference> sectionArrayAdapter =
-                new ArrayAdapter<>(MainActivity.this,
+                new ArrayAdapter<>(FavoritesActivity.this,
                         android.R.layout.simple_spinner_dropdown_item, movieListingPreferences);
         sectionArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         listingPrefsSpinner.setAdapter(sectionArrayAdapter);
@@ -242,9 +255,9 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     MovieListingPreference currentItem =
                             (MovieListingPreference) parent.getItemAtPosition(position);
-                    Utils.writeStringToPreferences(MainActivity.this,
+                    Utils.writeStringToPreferences(FavoritesActivity.this,
                             "moviePreference", currentItem.getKey());
-                    Utils.writeStringToPreferences(MainActivity.this,
+                    Utils.writeStringToPreferences(FavoritesActivity.this,
                             "moviePreferenceNumeric", String.valueOf(position));
                     moviePreferencePosition = position;
                     moviePreference = currentItem.getKey();
@@ -257,4 +270,84 @@ public class MainActivity extends AppCompatActivity {
                 }
             };
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        Loader<Cursor> returnCursor = null;
+        String[] projection;
+        switch (i) {
+            case COUNT_LOADER_ID:
+                projection = new String[]{"COUNT(*)"};
+                returnCursor = new CursorLoader(this,   // Parent activity context
+                        ProductEntry.CONTENT_URI,       // Provider content URI to query
+                        projection,                     // Columns to include in the resulting Cursor
+                        null,                           // No selection clause
+                        null,                           // No selection arguments
+                        null);
+                break;
+
+            case PRODUCTS_LOADER_ID:
+                // Define a projection that specifies the columns from the table we care about.
+                projection = new String[]{
+                        ProductEntry._ID,
+                        ProductEntry.COLUMN_PRODUCT_NAME,
+                        ProductEntry.COLUMN_PRODUCT_PRICE,
+                        ProductEntry.COLUMN_PRODUCT_IMAGE,
+                        ProductEntry.COLUMN_PRODUCT_QUANTITY};
+
+
+                // loader will execute the ContentProvider's query method on a background thread
+                returnCursor = new CursorLoader(this,// Parent activity context
+                        ProductEntry.CONTENT_URI,   // Provider content URI to query
+                        projection,                 // Columns to include in the resulting Cursor
+                        whereCondition,             // example WHERE column = ?
+                        whereArgs,                  // values for placeholders in above condition
+                        null);                      // Default sort order
+                break;
+        }
+
+        return returnCursor;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        // Update {@link ProductCursorAdapter} with this new cursor containing updated product data
+        switch (loader.getId()) {
+
+            case COUNT_LOADER_ID:
+                if (data.moveToFirst()) {
+                    recordsInDatabase = data.getInt(0);
+                    Toast.makeText(this, String.valueOf(recordsInDatabase) +
+                            getString(R.string.records_in_database), Toast.LENGTH_SHORT).show();
+                }
+                // Decided to make the call to the products loader after
+                // the count completes due to race condition
+                getLoaderManager().initLoader(PRODUCTS_LOADER_ID, null, this);
+                break;
+
+            case PRODUCTS_LOADER_ID:
+                recyclerProductCursorAdapter.swapCursor(data);
+
+                // Race condition means : even though the count loader is kicked off first,
+                // the product loader CAN complete first due to async operations
+                // before recordsInDatabase has been initialized
+                if (recordsInDatabase > 0) {
+                    // We have one or more records
+                    emptyView.setVisibility(View.GONE);
+                    noResultsView.setVisibility(data.getCount() > 0 ? View.GONE : View.VISIBLE);
+                    recyclerView.setVisibility(data.getCount() > 0 ? View.VISIBLE : View.GONE);
+                } else {
+                    // We have zero records
+                    noResultsView.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.GONE);
+                    emptyView.setVisibility(View.VISIBLE);
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        // Callback called when the data needs to be deleted
+        recyclerProductCursorAdapter.swapCursor(null);
+    }
 }

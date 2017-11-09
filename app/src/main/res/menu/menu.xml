@@ -12,4 +12,8 @@
     <item android:id="@+id/listing_preferences"
         android:icon="@android:drawable/ic_menu_manage"
         android:title="@string/menu_listing_preferences" />
+
+    <item android:id="@+id/favorites"
+        android:icon="@android:drawable/ic_menu_manage"
+        android:title="@string/menu_favorites" />
 </menu>

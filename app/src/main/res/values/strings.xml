@@ -26,5 +26,6 @@
     <string name="toast_no_internet">No Internet Connection</string>
     <string name="dlg_btn_ok">Ok</string>
     <string name="dlg_btn_cancel">Cancel</string>
+    <string name="menu_favorites">Favorites</string>
 
 </resources>
