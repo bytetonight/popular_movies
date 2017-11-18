@@ -25,6 +25,7 @@ import android.util.Log;
 
 /**
  * {@link ContentProvider} for Favorites.
+ * Has to be declared in AndroidManifest.xml
  */
 public class FavProvider extends ContentProvider {
 
@@ -138,9 +139,6 @@ public class FavProvider extends ContentProvider {
         if (name == null) {
             throw new IllegalArgumentException("Favorite requires a name");
         }
-
-
-
 
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 

@@ -18,9 +18,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
-
+import android.example.com.popularmovies.BR;
 import android.example.com.popularmovies.R;
-import android.example.com.popularmovies.databinding.MediaListItemBinding;
+import android.example.com.popularmovies.database.FavContract;
+import android.example.com.popularmovies.database.FavContract.FavEntry;
+import android.example.com.popularmovies.databinding.FavoritesListItemBinding;
 import android.example.com.popularmovies.handlers.MediaItemHandlers;
 import android.example.com.popularmovies.models.Movie;
 import android.support.v7.widget.RecyclerView;
@@ -34,11 +36,11 @@ import android.view.ViewGroup;
  * @Google : Why make things easy is you can make them complicated, right ?
  */
 
-public class RecyclerProductCursorAdapter
-        extends CursorRecyclerViewAdapter<RecyclerProductCursorAdapter.ViewHolder> {
+public class RecyclerFavoritesCursorAdapter
+        extends CursorRecyclerViewAdapter<RecyclerFavoritesCursorAdapter.ViewHolder> {
 
 
-    public RecyclerProductCursorAdapter(Context context, Cursor cursor) {
+    public RecyclerFavoritesCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor);
 
     }
@@ -46,9 +48,8 @@ public class RecyclerProductCursorAdapter
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-
-        MediaListItemBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
-                R.layout.media_list_item, parent, false);
+        FavoritesListItemBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
+                R.layout.favorites_list_item, parent, false);
         binding.setHandlers(new MediaItemHandlers());
         return new ViewHolder(binding);
     }
@@ -57,8 +58,29 @@ public class RecyclerProductCursorAdapter
     @Override
     public void onBindViewHolder(ViewHolder holder, Cursor cursor) {
 
-        /*Movie product = Movie.fromCursor(null, cursor);
-        holder.bind(product);*/
+            Movie movie = new Movie();
+
+            int idIndex = cursor.getColumnIndex(FavContract.FavEntry._ID);
+            int movieIdIndex = cursor.getColumnIndex(FavEntry.TMDB_MOVIE_ID);
+            int nameIndex = cursor.getColumnIndex(FavEntry.COLUMN_MOVIE_NAME);
+            int imageIndex = cursor.getColumnIndex(FavEntry.COLUMN_MOVIE_POSTER_URL);
+
+
+            //Check if the columns actually exist
+            if (idIndex > -1)
+                movie.setDatabaseId(cursor.getInt(idIndex));
+
+            if (movieIdIndex > -1)
+                movie.setId(cursor.getInt(movieIdIndex));
+
+            if (nameIndex > -1)
+                movie.setOriginalTitle(cursor.getString(nameIndex));
+
+            if (imageIndex > -1)
+                movie.setPosterPath(cursor.getString(imageIndex));
+
+            // Movie movie = Movie.fromCursor(null, cursor);
+        holder.bind(movie);
     }
 
 
@@ -74,9 +96,9 @@ public class RecyclerProductCursorAdapter
             this.binding = binding;
         }
 
-        /*public void bind(Object obj) {
-            binding.setVariable(android.example.com.myinventoryapp.BR.product, obj);
+        public void bind(Object obj) {
+            binding.setVariable(BR.mediaItem, obj);
             binding.executePendingBindings();
-        }*/
+        }
     }
 }

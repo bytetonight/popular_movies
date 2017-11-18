@@ -16,7 +16,8 @@ package android.example.com.popularmovies.config;
 public class Config {
     public static final String API_ENDPOINT = "https://api.themoviedb.org/3/";
     public static final String IMAGE_API_ENDPOINT = "http://image.tmdb.org/t/p/";
-    public static final String POSTER_DEFAULT_SIZE = "w185/";
+    public static final String POSTER_THUMBNAIL_SIZE = "w92/";
+    public static final String POSTER_DEFAULT_SIZE = "w154/";
     public static final String BACKDROP_DEFAULT_SIZE = "w780/";
     public static final int RECYCLERVIEW_COLUMNS_PORTRAIT = 3;
     public static final int RECYCLERVIEW_COLUMNS_LAND = 5;

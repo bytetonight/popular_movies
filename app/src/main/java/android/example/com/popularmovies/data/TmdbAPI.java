@@ -9,8 +9,9 @@
 
 package android.example.com.popularmovies.data;
 
-import android.example.com.popularmovies.models.MovieResults;
 import android.example.com.popularmovies.models.Movie;
+import android.example.com.popularmovies.models.MovieResults;
+import android.example.com.popularmovies.models.MovieTrailerList;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -28,6 +29,9 @@ public interface TmdbAPI {
 
     @GET("movie/{id}")
     Call<Movie> getMovieById(@Path("id") int id, @Query("api_key") String apiKey);
+
+    @GET("movie/{id}/videos")
+    Call<MovieTrailerList> getTrailerByMovieId(@Path("id") int id, @Query("api_key") String apiKey);
 
     @GET("movie/{preference}")
     Call<MovieResults> listMoviesByPreference(

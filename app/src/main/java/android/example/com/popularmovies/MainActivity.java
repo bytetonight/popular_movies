@@ -57,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
      */
     private static final String TAG = MainActivity.class.getName();
     private List<MovieListingPreference> movieListingPreferences = new ArrayList<>();
-    private RestAdapter restAdapter;
     private MediaAdapter mediaAdapter;
     private MovieResults movieResults;
     private String moviePreference;
@@ -94,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
 
-        restAdapter = new RestAdapter();
         if (savedInstanceState != null) {
             movieResults = savedInstanceState.getParcelable("movieResults");
         } else {
@@ -136,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
     private void listMoviesByPreference() {
         try {
             Call<MovieResults> discoverMoviesCall =
-                    restAdapter.getInstance(MainActivity.this)
+                    RestAdapter.getInstance(MainActivity.this)
                             .listMoviesByPreference(moviePreference, BuildConfig.TMDB_API_KEY);
 
             discoverMoviesCall.enqueue(new Callback<MovieResults>() {

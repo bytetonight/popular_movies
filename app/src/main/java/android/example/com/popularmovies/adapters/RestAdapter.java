@@ -31,9 +31,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RestAdapter  {
 
-    private TmdbAPI tmdbAPI;
+    private static TmdbAPI tmdbAPI;
 
-    public TmdbAPI getInstance(Context context) throws NoConnectionException {
+    private RestAdapter() {
+        if (tmdbAPI != null) {
+            throw new RuntimeException("Use getInstance() method to get an instance of RestAdapter");
+        }
+    }
+
+    public static TmdbAPI getInstance(Context context) throws NoConnectionException {
 
         if (!Utils.hasConnection(context)) {
             throw new NoConnectionException();
@@ -44,7 +50,7 @@ public class RestAdapter  {
             OkHttpClient.Builder okHTTPClientBuilder = new OkHttpClient.Builder();
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
             loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
-            // use HttpLoggingInterceptor.Level.NONE to see constructed URLs for the requests
+            // use HttpLoggingInterceptor.Level.BASIC to see constructed URLs for the requests
 
             okHTTPClientBuilder.addInterceptor(loggingInterceptor);
             okHTTPClientBuilder.connectTimeout(Config.CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS);

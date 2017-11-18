@@ -27,5 +27,12 @@
     <string name="dlg_btn_ok">Ok</string>
     <string name="dlg_btn_cancel">Cancel</string>
     <string name="menu_favorites">Favorites</string>
+    <string name="records_in_database">\u0020records</string>
+    <!-- Toast message in editor when new product has been successfully inserted [CHAR LIMIT=NONE] -->
+    <string name="insert_movie_successful">Movie saved</string>
 
+    <!-- Toast message in editor when new product has failed to be inserted [CHAR LIMIT=NONE] -->
+    <string name="insert_movie_failed">Error saving Movie</string>
+    <string name="title_favorites">Favorites</string>
+    <string name="title_details">Details</string>
 </resources>

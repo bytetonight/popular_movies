@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ PopularMovies by bytetonight
+  ~ Created for the Udacity (c) Android (c) Developer Nanodegree
+  ~ This software uses a remote API kindly made accessible by
+  ~ https://www.themoviedb.org/
+  ~
+  ~ Copyright (c) 2017.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="handlers"
+            type="android.example.com.popularmovies.handlers.MediaItemHandlers" />
+
+        <variable
+            name="mediaItem"
+            type="android.example.com.popularmovies.models.Movie" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{(v) -> handlers.onClickViewDetails(v, mediaItem)}"
+        tools:context="android.example.com.popularmovies.DetailsActivity">
+
+        <RelativeLayout style="@style/fav_list_item_container">
+            <ProgressBar
+                android:id="@+id/loading_indicator"
+                style="@style/poster_progress_bar" />
+
+            <ImageView
+                style="@style/list_item_header_image"
+                android:layout_height="50dp"
+                android:contentDescription="@{mediaItem.originalTitle}"
+                app:posterThumbNailUrl="@{mediaItem.posterPath}"
+                tools:src="@drawable/guardians" />
+        </RelativeLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            tools:text="bla bla bla"
+            android:text="@{mediaItem.originalTitle}"/>
+    </LinearLayout>
+
+</layout>

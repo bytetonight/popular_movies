@@ -9,13 +9,14 @@
 
 package android.example.com.popularmovies.handlers;
 
+
 import android.content.Context;
 import android.content.Intent;
 import android.example.com.popularmovies.DetailsActivity;
-import android.example.com.popularmovies.R;
 import android.example.com.popularmovies.models.AbstractMedia;
 import android.example.com.popularmovies.models.Movie;
 import android.view.View;
+
 
 
 /**
@@ -24,26 +25,12 @@ import android.view.View;
 
 public class MediaItemHandlers {
 
+    // Todo Thorsten, investigate if setting a callback this way could be an advantage
+    // https://stackoverflow.com/questions/41938671/databinding-button-onclick-not-working
     public void onClickViewDetails(View v, AbstractMedia absMedia) {
-        Context context = v.getContext(); //quite cool hey ?
+        Context context = v.getContext();
         Intent mediaDetails = new Intent(context, DetailsActivity.class);
         mediaDetails.putExtra("absMedia", absMedia);
         context.startActivity(mediaDetails);
-    }
-
-    public void sharePoi(View v, AbstractMedia absMedia) {
-
-        Context context = v.getContext();
-        Intent sendIntent = new Intent();
-        sendIntent.setAction(Intent.ACTION_SEND);
-
-
-        if (absMedia instanceof Movie) {
-            sendIntent.putExtra(Intent.EXTRA_TEXT, ((Movie) absMedia).getOriginalTitle());
-        }
-        sendIntent.setType("text/plain");
-        context.startActivity(
-                Intent.createChooser(
-                        sendIntent, context.getString(R.string.share_with)));
     }
 }

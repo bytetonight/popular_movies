@@ -27,6 +27,11 @@
         <item name="android:layout_margin">2dp</item>
     </style>
 
+    <style name="fav_list_item_container" parent="list_item_container">
+        <item name="android:minHeight">50dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:maxHeight">200dp</item>
+    </style>
     <style name="list_item_header_image">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -160,4 +165,16 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
+
+    <style name="list_item_purchase_button">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:backgroundTint">@color/colorPrimaryDark</item>
+        <!-- compat mode for < 21 -->
+        <item name="backgroundTint">@color/colorPrimaryDark</item>
+        <item name="android:drawableRight">@android:drawable/btn_star</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
 </resources>

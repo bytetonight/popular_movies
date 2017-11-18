@@ -9,7 +9,11 @@
 
 package android.example.com.popularmovies.models;
 
+
+import android.databinding.BaseObservable;
+import android.databinding.Bindable;
 import android.databinding.BindingAdapter;
+import android.example.com.popularmovies.BR;
 import android.example.com.popularmovies.R;
 import android.example.com.popularmovies.config.Config;
 import android.graphics.Color;
@@ -38,9 +42,9 @@ import java.util.List;
  * Never the less a great demonstration
  */
 
-public class Movie implements AbstractMedia, Parcelable
+public class Movie extends BaseObservable implements AbstractMedia, Parcelable
 {
-
+    private int databaseId = -1;
     @SerializedName("adult")
     @Expose
     private Boolean adult;
@@ -158,10 +162,13 @@ public class Movie implements AbstractMedia, Parcelable
         this.video = ((Boolean) in.readValue((Boolean.class.getClassLoader())));
         this.voteAverage = ((Double) in.readValue((Double.class.getClassLoader())));
         this.voteCount = ((Integer) in.readValue((Integer.class.getClassLoader())));
+        this.databaseId = ((Integer) in.readValue((Integer.class.getClassLoader())));
     }
 
     public Movie() {
     }
+
+
 
     public Boolean getAdult() {
         return adult;
@@ -363,9 +370,27 @@ public class Movie implements AbstractMedia, Parcelable
         this.voteCount = voteCount;
     }
 
+    @Bindable
+    public int getDatabaseId() {
+        return databaseId;
+    }
+
+    public void setDatabaseId(int databaseId) {
+        this.databaseId = databaseId;
+        notifyPropertyChanged(BR.databaseId);
+    }
+
+
+    @BindingAdapter("bind:posterThumbNailUrl")
+    public static void getPosterThumbNail(ImageView imageView, String imageUri) {
+        if (imageUri == null || imageUri.equals(""))
+            return;
+        glideImageLoader(imageView, Config.IMAGE_API_ENDPOINT + Config.POSTER_THUMBNAIL_SIZE + imageUri, false);
+
+    }
 
     /**
-     * Prepares loading of poster images with a width of 342px
+     * Prepares loading of poster images with a width of {@link Config} POSTER_DEFAULT_SIZE px
      * When an ImageView in the XML layout contains the attribute app:posterUrl
      * the binder will know due to the annotation @BindingAdapter("bind:posterUrl")
      * to call getPosterImage and pass the value of above attribute as a parameter.
@@ -410,12 +435,15 @@ public class Movie implements AbstractMedia, Parcelable
         Log.v("Movie", imageUri);
         Glide.with(imageView.getContext())
                 .load( imageUri)
+                //.centerCrop()
+                //.thumbnail(.1f)
                 // Glide V3 code
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
                     public boolean onException(Exception e, String model,
                                                Target<GlideDrawable> target,
                                                boolean isFirstResource) {
+                        Log.v("glideImageLoader", e.getMessage());
                         return false;
                     }
 
@@ -459,6 +487,7 @@ public class Movie implements AbstractMedia, Parcelable
         dest.writeValue(video);
         dest.writeValue(voteAverage);
         dest.writeValue(voteCount);
+        dest.writeValue(databaseId);
     }
 
     public int describeContents() {
