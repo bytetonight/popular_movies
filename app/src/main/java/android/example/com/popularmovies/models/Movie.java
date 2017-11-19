@@ -10,20 +10,28 @@
 package android.example.com.popularmovies.models;
 
 
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.Intent;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.databinding.BindingAdapter;
 import android.example.com.popularmovies.BR;
 import android.example.com.popularmovies.R;
+import android.example.com.popularmovies.adapters.TrailerAdapter;
 import android.example.com.popularmovies.config.Config;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -136,6 +144,9 @@ public class Movie extends BaseObservable implements AbstractMedia, Parcelable
 
     };
 
+    @Expose
+    private List<MovieTrailer> trailerList = null;
+
     protected Movie(Parcel in) {
         this.adult = ((Boolean) in.readValue((Boolean.class.getClassLoader())));
         this.backdropPath = ((String) in.readValue((String.class.getClassLoader())));
@@ -163,6 +174,7 @@ public class Movie extends BaseObservable implements AbstractMedia, Parcelable
         this.voteAverage = ((Double) in.readValue((Double.class.getClassLoader())));
         this.voteCount = ((Integer) in.readValue((Integer.class.getClassLoader())));
         this.databaseId = ((Integer) in.readValue((Integer.class.getClassLoader())));
+        in.readList(this.trailerList, (android.example.com.popularmovies.models.MovieTrailer.class.getClassLoader()));
     }
 
     public Movie() {
@@ -368,6 +380,46 @@ public class Movie extends BaseObservable implements AbstractMedia, Parcelable
 
     public void setVoteCount(Integer voteCount) {
         this.voteCount = voteCount;
+    }
+
+    /**
+     * This is turning into spaghetti code. Perhaps I need to better use a RecyclerView again
+     * What happens here ?
+     * items in the annotation is an attribute of the ListView
+     * app:items="@{mediaItem.trailerList}"
+     * So when the layout is bound, we land here
+     * @param view
+     * @param list
+     */
+    @BindingAdapter("bind:items")
+    public static void bindTrailerList(ListView view, final List<MovieTrailer> list) {
+        final Context context = view.getContext();
+        TrailerAdapter trailerAdapter = new TrailerAdapter(view.getContext(), 0,  list);
+        view.setAdapter(trailerAdapter);
+        view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                MovieTrailer movieTrailer = list.get(position);
+                Toast.makeText(view.getContext(), movieTrailer.getName(), Toast.LENGTH_SHORT).show();
+                Intent applicationIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + movieTrailer.getKey()));
+
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("http://www.youtube.com/watch?v=" + movieTrailer.getKey()));
+                try {
+                    context.startActivity(applicationIntent);
+                } catch (ActivityNotFoundException ex) {
+                    context.startActivity(browserIntent);
+                }
+            }
+        });
+    }
+
+    public List<MovieTrailer> getTrailerList() {
+        return trailerList;
+    }
+
+    public void setTrailerList(List<MovieTrailer> trailerList) {
+        this.trailerList = trailerList;
     }
 
     @Bindable

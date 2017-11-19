@@ -31,7 +31,7 @@ public interface TmdbAPI {
     Call<Movie> getMovieById(@Path("id") int id, @Query("api_key") String apiKey);
 
     @GET("movie/{id}/videos")
-    Call<MovieTrailerList> getTrailerByMovieId(@Path("id") int id, @Query("api_key") String apiKey);
+    Call<MovieTrailerList> getTrailersListByMovieId(@Path("id") int id, @Query("api_key") String apiKey);
 
     @GET("movie/{preference}")
     Call<MovieResults> listMoviesByPreference(

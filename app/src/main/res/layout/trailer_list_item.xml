@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ PopularMovies by bytetonight
+  ~ Created for the Udacity (c) Android (c) Developer Nanodegree
+  ~ This software uses a remote API kindly made accessible by
+  ~ https://www.themoviedb.org/
+  ~
+  ~ Copyright (c) 2017.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="handlers"
+            type="android.example.com.popularmovies.handlers.MediaItemHandlers" />
+
+        <variable
+            name="trailer"
+            type="android.example.com.popularmovies.models.MovieTrailer" />
+    </data>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:textColor="@android:color/white"
+        android:padding="4dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        tools:text="bla bla bla"
+        android:text="@{trailer.name}"/>
+</layout>

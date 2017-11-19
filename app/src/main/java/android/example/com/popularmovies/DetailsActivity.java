@@ -18,6 +18,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.example.com.popularmovies.adapters.RestAdapter;
+import android.example.com.popularmovies.adapters.TrailerAdapter;
 import android.example.com.popularmovies.data.PieChartWrapper;
 import android.example.com.popularmovies.database.FavContract;
 import android.example.com.popularmovies.databinding.ActivityDetailsBinding;
@@ -25,6 +26,7 @@ import android.example.com.popularmovies.exceptions.NoConnectionException;
 import android.example.com.popularmovies.handlers.ActionCallback;
 import android.example.com.popularmovies.handlers.MediaItemHandlers;
 import android.example.com.popularmovies.models.Movie;
+import android.example.com.popularmovies.models.MovieTrailerList;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -44,13 +46,14 @@ public class DetailsActivity extends AppCompatActivity
     private Movie selectedMovie;
     private PieChartWrapper pieChartWrapper;
     private ActivityDetailsBinding binding;
+    private TrailerAdapter trailerAdapter;
     private int databaseId = -1;
     private boolean movieFoundInDb = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_details);
+        //setContentView(R.layout.activity_details);
 
         Intent senderIntent = getIntent();
 
@@ -88,6 +91,7 @@ public class DetailsActivity extends AppCompatActivity
         binding.setHandlers(new MediaItemHandlers());
         binding.setActionCallback(this);
 
+
         // If this movie is a Favorite, hide the add to favorites button
         if (selectedMovie.getDatabaseId() != -1) {
             toggleAddFavorites(false);
@@ -96,6 +100,7 @@ public class DetailsActivity extends AppCompatActivity
         if (selectedMovie.getVoteAverage() != null) {
             setUpPieChartRating();
         }
+
 
         setTitle(getString(R.string.title_details));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -177,7 +182,7 @@ public class DetailsActivity extends AppCompatActivity
      * are fully populated in the MainActivity
      * @param id
      */
-    private void loadMovieDetailsById(int id) {
+    private void loadMovieDetailsById(final int id) {
         Call<Movie> getMovieCall;
         try {
             getMovieCall = RestAdapter.getInstance(this).getMovieById(id, BuildConfig.TMDB_API_KEY);
@@ -190,11 +195,14 @@ public class DetailsActivity extends AppCompatActivity
                         selectedMovie.setDatabaseId(databaseId);
                         // Rebind
                         binding.setMediaItem(selectedMovie);
-                        binding.backdropImageView.invalidate();
-                        binding.posterImageView.invalidate();
+                        binding.invalidateAll();
+                       /* binding.backdropImageView.invalidate();
+                        binding.posterImageView.invalidate();*/
 
                         setUpPieChartRating();
                         toggleAddFavorites(false);
+
+                        loadMovieTrailerList(id);
                     }
                 }
 
@@ -211,6 +219,35 @@ public class DetailsActivity extends AppCompatActivity
         }
     }
 
+    private void loadMovieTrailerList(int id) {
+        Call<MovieTrailerList> getMovieTrailerListCall;
+        try {
+            getMovieTrailerListCall = RestAdapter.getInstance(this).getTrailersListByMovieId(id, BuildConfig.TMDB_API_KEY);
+
+            getMovieTrailerListCall.enqueue(new Callback<MovieTrailerList>() {
+                @Override
+                public void onResponse(Call<MovieTrailerList> call, Response<MovieTrailerList> response) {
+                    if (response.isSuccessful()) {
+                        MovieTrailerList movieTrailerList = response.body();
+                        selectedMovie.setTrailerList(movieTrailerList.getResults());
+                        binding.invalidateAll();
+                        //binding.setMediaItem(selectedMovie);
+                        binding.notifyChange();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MovieTrailerList> call, Throwable t) {
+                    Toast.makeText(DetailsActivity.this,
+                            getString(R.string.toast_load_movies_fail) + t.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        } catch (NoConnectionException e) {
+
+        }
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -262,7 +299,8 @@ public class DetailsActivity extends AppCompatActivity
                     int databaseIdIndex = data.getColumnIndex(FavContract.FavEntry._ID);
                     if (databaseIdIndex != -1) {
                         selectedMovie.setDatabaseId(data.getInt(databaseIdIndex));
-                        binding.setMediaItem(selectedMovie);
+                        //binding.setMediaItem(selectedMovie);
+                        binding.invalidateAll();
                         if (movieFoundInDb) {
                             toggleAddFavorites(false);
                         } else {
