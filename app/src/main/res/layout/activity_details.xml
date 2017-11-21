@@ -24,10 +24,19 @@
             name="mediaItem"
             type="android.example.com.popularmovies.models.Movie" />
 
-        <!--<variable
-            name="trailer"
-            type="android.example.com.popularmovies.models.MovieTrailer" />-->
+
     </data>
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <!-- Static Backdrop Image -->
+    <ImageView
+        android:id="@+id/backdropImageView"
+        android:contentDescription="@{mediaItem.originalTitle}"
+        app:backdropUrl="@{mediaItem.backdropPath}"
+        tools:src="@drawable/thor_backdrop"
+        style="@style/backdrop_image" />
 
     <ScrollView style="@style/main_scroll_view">
 
@@ -36,14 +45,6 @@
 
             <!-- Main Content Container -->
             <RelativeLayout style="@style/main_content_container">
-
-                <!-- Backdrop Image-->
-                <ImageView
-                    android:id="@+id/backdropImageView"
-                    android:contentDescription="@{mediaItem.originalTitle}"
-                    app:backdropUrl="@{mediaItem.backdropPath}"
-                    tools:src="@drawable/thor_backdrop"
-                    style="@style/backdrop_image" />
 
                 <!-- Pseudo Image Filter -->
                 <View style="@style/pseudo_image_effect" />
@@ -156,11 +157,12 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Reviews"/>
-                        <ListView
-                            android:id="@+id/reviews_list_view"
+
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            app:review_items="@{mediaItem.reviewResults.reviews}"/>
+                            android:orientation="vertical"
+                            app:review_items2="@{mediaItem.reviewResults.reviews}"/>
 
                         <TextView
                             android:layout_width="match_parent"
@@ -176,4 +178,6 @@
         </LinearLayout>
 
     </ScrollView>
+
+</RelativeLayout>
 </layout>

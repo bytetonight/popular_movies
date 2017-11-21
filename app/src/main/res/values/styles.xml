@@ -146,6 +146,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:orientation">vertical</item>
+        <item name="android:background">@android:color/black</item>
     </style>
 
     <style name="movies_list_recyclerView">

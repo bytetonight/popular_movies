@@ -30,8 +30,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -432,6 +434,28 @@ public class Movie extends BaseObservable implements AbstractMedia, Parcelable
                 context.startActivity(i);
             }
         });
+    }
+
+    @BindingAdapter("bind:review_items2")
+    public static void bindReviewList2(LinearLayout view, final List<Review> list) {
+        if (list == null)
+            return;
+        final Context context = view.getContext();
+        for (final Review review : list) {
+            TextView tv = new TextView(context);
+            tv.setTextColor(Color.WHITE);
+            tv.setText(review.getContent());
+            tv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(v.getContext(), review.getUrl(), Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(review.getUrl()));
+                    context.startActivity(i);
+                }
+            });
+            view.addView(tv);
+        }
+
     }
 
 

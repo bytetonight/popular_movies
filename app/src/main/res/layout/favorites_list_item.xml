@@ -44,6 +44,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:textColor="@android:color/white"
+            android:padding="4dp"
             tools:text="bla bla bla"
             android:text="@{mediaItem.originalTitle}"/>
     </LinearLayout>
