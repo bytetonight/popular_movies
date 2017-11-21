@@ -27,6 +27,7 @@ import android.example.com.popularmovies.handlers.ActionCallback;
 import android.example.com.popularmovies.handlers.MediaItemHandlers;
 import android.example.com.popularmovies.models.Movie;
 import android.example.com.popularmovies.models.MovieTrailerList;
+import android.example.com.popularmovies.models.ReviewResults;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -43,6 +44,7 @@ public class DetailsActivity extends AppCompatActivity
         implements ActionCallback, LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int CHECK_FAVORITES_LOADER = 1;
+    private static final String SELECTED_MOVIE_BUNDLE_KEY = "selectedMovie";
     private Movie selectedMovie;
     private PieChartWrapper pieChartWrapper;
     private ActivityDetailsBinding binding;
@@ -53,7 +55,7 @@ public class DetailsActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_details);
+
 
         Intent senderIntent = getIntent();
 
@@ -63,9 +65,12 @@ public class DetailsActivity extends AppCompatActivity
         }
 
         if (savedInstanceState != null) {
-            selectedMovie = savedInstanceState.getParcelable("selectedMovie");
+            selectedMovie = savedInstanceState.getParcelable(SELECTED_MOVIE_BUNDLE_KEY);
+
         }
 
+        loadMovieTrailerList(selectedMovie.getId());
+        loadMovieReviewsList(selectedMovie.getId());
         // If there is a databaseId then we came from FavoritesActivity
         // but we could be coming from MainActivity too requesting
         // details of a Movie that actually is a favorite
@@ -84,6 +89,7 @@ public class DetailsActivity extends AppCompatActivity
         if (selectedMovie == null) {
             return;
         }
+
 
 
         binding = DataBindingUtil.setContentView(DetailsActivity.this, R.layout.activity_details);
@@ -109,7 +115,7 @@ public class DetailsActivity extends AppCompatActivity
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable("selectedMovie", selectedMovie);
+        outState.putParcelable(SELECTED_MOVIE_BUNDLE_KEY, selectedMovie);
     }
 
     /**
@@ -138,6 +144,11 @@ public class DetailsActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Method from {@link ActionCallback} Interface
+     *
+     * @param movie
+     */
     @Override
     public void onClickRemoveFromFavorites(Movie movie) {
         int databaseId = movie.getDatabaseId();
@@ -202,7 +213,7 @@ public class DetailsActivity extends AppCompatActivity
                         setUpPieChartRating();
                         toggleAddFavorites(false);
 
-                        loadMovieTrailerList(id);
+
                     }
                 }
 
@@ -215,7 +226,7 @@ public class DetailsActivity extends AppCompatActivity
             });
 
         } catch (NoConnectionException e) {
-
+            displayConnectivityNotification();
         }
     }
 
@@ -245,7 +256,37 @@ public class DetailsActivity extends AppCompatActivity
             });
 
         } catch (NoConnectionException e) {
+            displayConnectivityNotification();
+        }
+    }
 
+    private void loadMovieReviewsList(int id) {
+        Call<ReviewResults> getReviewsCall;
+        try {
+            getReviewsCall = RestAdapter.getInstance(this).getReviewsByMovieId(id, BuildConfig.TMDB_API_KEY);
+
+            getReviewsCall.enqueue(new Callback<ReviewResults>() {
+                @Override
+                public void onResponse(Call<ReviewResults> call, Response<ReviewResults> response) {
+                    if (response.isSuccessful()) {
+                        ReviewResults reviewResults = response.body();
+                        selectedMovie.setReviewResults(reviewResults);
+                        binding.invalidateAll();
+                        //binding.setMediaItem(selectedMovie);
+                        binding.notifyChange();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ReviewResults> call, Throwable t) {
+                    Toast.makeText(DetailsActivity.this,
+                            getString(R.string.toast_load_movies_fail) + t.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        } catch (NoConnectionException e) {
+            displayConnectivityNotification();
         }
     }
 
@@ -316,5 +357,11 @@ public class DetailsActivity extends AppCompatActivity
     public void onLoaderReset(Loader<Cursor> loader) {
         // Callback called when the data needs to be deleted
         //mediaAdapter.swapCursor(null);
+
+    }
+
+    private void displayConnectivityNotification() {
+        Toast.makeText(this, getString(R.string.connectivity_issue),
+                Toast.LENGTH_SHORT).show();
     }
 }

@@ -35,4 +35,5 @@
     <string name="insert_movie_failed">Error saving Movie</string>
     <string name="title_favorites">Favorites</string>
     <string name="title_details">Details</string>
+    <string name="connectivity_issue">Internet / Network Connectivity not available</string>
 </resources>

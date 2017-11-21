@@ -24,9 +24,9 @@
             name="mediaItem"
             type="android.example.com.popularmovies.models.Movie" />
 
-        <variable
+        <!--<variable
             name="trailer"
-            type="android.example.com.popularmovies.models.MovieTrailer" />
+            type="android.example.com.popularmovies.models.MovieTrailer" />-->
     </data>
 
     <ScrollView style="@style/main_scroll_view">
@@ -146,9 +146,27 @@
                             android:id="@+id/trailer_list_view"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            app:trailer_items="@{mediaItem.trailerList}"/>
 
-                            app:items="@{mediaItem.trailerList}"/>
-                       <!-- android:onClick="@{(v) -> handlers.onClickTrailerListView(mediaItem)}"-->
+                    </LinearLayout>
+
+                    <LinearLayout style="@style/details_vertical_content">
+                        <TextView
+                            style="@style/detailsText.header"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Reviews"/>
+                        <ListView
+                            android:id="@+id/reviews_list_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:review_items="@{mediaItem.reviewResults.reviews}"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="the end"
+                            android:visibility="invisible"/>
                     </LinearLayout>
 
                 </LinearLayout>

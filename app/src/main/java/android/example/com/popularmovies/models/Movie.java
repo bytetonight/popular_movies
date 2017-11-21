@@ -18,6 +18,7 @@ import android.databinding.Bindable;
 import android.databinding.BindingAdapter;
 import android.example.com.popularmovies.BR;
 import android.example.com.popularmovies.R;
+import android.example.com.popularmovies.adapters.ReviewAdapter;
 import android.example.com.popularmovies.adapters.TrailerAdapter;
 import android.example.com.popularmovies.config.Config;
 import android.graphics.Color;
@@ -146,6 +147,9 @@ public class Movie extends BaseObservable implements AbstractMedia, Parcelable
 
     @Expose
     private List<MovieTrailer> trailerList = null;
+
+    @Expose
+    private ReviewResults reviewResults = null;
 
     protected Movie(Parcel in) {
         this.adult = ((Boolean) in.readValue((Boolean.class.getClassLoader())));
@@ -386,12 +390,12 @@ public class Movie extends BaseObservable implements AbstractMedia, Parcelable
      * This is turning into spaghetti code. Perhaps I need to better use a RecyclerView again
      * What happens here ?
      * items in the annotation is an attribute of the ListView
-     * app:items="@{mediaItem.trailerList}"
+     * app:trailer_items="@{mediaItem.trailerList}"
      * So when the layout is bound, we land here
      * @param view
      * @param list
      */
-    @BindingAdapter("bind:items")
+    @BindingAdapter("bind:trailer_items")
     public static void bindTrailerList(ListView view, final List<MovieTrailer> list) {
         final Context context = view.getContext();
         TrailerAdapter trailerAdapter = new TrailerAdapter(view.getContext(), 0,  list);
@@ -414,12 +418,37 @@ public class Movie extends BaseObservable implements AbstractMedia, Parcelable
         });
     }
 
+    @BindingAdapter("bind:review_items")
+    public static void bindReviewList(ListView view, final List<Review> list) {
+        final Context context = view.getContext();
+        ReviewAdapter reviewAdapter = new ReviewAdapter(view.getContext(), 0,  list);
+        view.setAdapter(reviewAdapter);
+        view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Review review = list.get(position);
+                Toast.makeText(view.getContext(), review.getUrl(), Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(review.getUrl()));
+                context.startActivity(i);
+            }
+        });
+    }
+
+
     public List<MovieTrailer> getTrailerList() {
         return trailerList;
     }
 
     public void setTrailerList(List<MovieTrailer> trailerList) {
         this.trailerList = trailerList;
+    }
+
+    public ReviewResults getReviewResults() {
+        return reviewResults;
+    }
+
+    public void setReviewResults(ReviewResults reviewResults) {
+        this.reviewResults = reviewResults;
     }
 
     @Bindable
