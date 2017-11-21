@@ -62,6 +62,8 @@ public class DetailsActivity extends AppCompatActivity
 
         if (senderIntent.hasExtra("absMedia")) {
             selectedMovie = senderIntent.getParcelableExtra("absMedia");
+            loadMovieTrailerList(selectedMovie.getId());
+            loadMovieReviewsList(selectedMovie.getId());
         }
 
         if (savedInstanceState != null) {
@@ -69,8 +71,7 @@ public class DetailsActivity extends AppCompatActivity
 
         }
 
-        loadMovieTrailerList(selectedMovie.getId());
-        loadMovieReviewsList(selectedMovie.getId());
+
         // If there is a databaseId then we came from FavoritesActivity
         // but we could be coming from MainActivity too requesting
         // details of a Movie that actually is a favorite
@@ -85,6 +86,8 @@ public class DetailsActivity extends AppCompatActivity
         } else {
             getLoaderManager().initLoader(CHECK_FAVORITES_LOADER, null, this);
         }
+
+
 
         if (selectedMovie == null) {
             return;
@@ -213,7 +216,8 @@ public class DetailsActivity extends AppCompatActivity
                         setUpPieChartRating();
                         toggleAddFavorites(false);
 
-
+                        loadMovieTrailerList(selectedMovie.getId());
+                        loadMovieReviewsList(selectedMovie.getId());
                     }
                 }
 
