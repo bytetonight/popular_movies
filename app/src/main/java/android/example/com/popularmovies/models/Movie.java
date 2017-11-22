@@ -21,11 +21,13 @@ import android.example.com.popularmovies.R;
 import android.example.com.popularmovies.adapters.ReviewAdapter;
 import android.example.com.popularmovies.adapters.TrailerAdapter;
 import android.example.com.popularmovies.config.Config;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v7.graphics.Palette;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -37,7 +39,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.google.gson.annotations.Expose;
@@ -196,12 +197,14 @@ public class Movie extends BaseObservable implements AbstractMedia, Parcelable
         this.adult = adult;
     }
 
+    @Bindable
     public String getBackdropPath() {
         return backdropPath;
     }
 
     public void setBackdropPath(String backdropPath) {
         this.backdropPath = backdropPath;
+        notifyPropertyChanged(BR.backdropPath);
     }
 
     public BelongsToCollection getBelongsToCollection() {
@@ -458,21 +461,24 @@ public class Movie extends BaseObservable implements AbstractMedia, Parcelable
 
     }
 
-
+    @Bindable
     public List<MovieTrailer> getTrailerList() {
         return trailerList;
     }
 
     public void setTrailerList(List<MovieTrailer> trailerList) {
         this.trailerList = trailerList;
+        notifyPropertyChanged(BR.trailerList);
     }
 
+    @Bindable
     public ReviewResults getReviewResults() {
         return reviewResults;
     }
 
     public void setReviewResults(ReviewResults reviewResults) {
         this.reviewResults = reviewResults;
+        notifyPropertyChanged(BR.reviewResults);
     }
 
     @Bindable
@@ -525,6 +531,8 @@ public class Movie extends BaseObservable implements AbstractMedia, Parcelable
 
     }
 
+
+    private static int posterImageVibrantColor = -1;
     /**
      * This is the actual loading section for above 2 methods
      * Why I did it this way ?
@@ -536,30 +544,50 @@ public class Movie extends BaseObservable implements AbstractMedia, Parcelable
      */
     private static void glideImageLoader(final ImageView imageView, String imageUri, final boolean colorize) {
         final ProgressBar loadingIndicator = imageView.getRootView().findViewById(R.id.loading_indicator);
-
+        final View pseudoFilter = imageView.getRootView().findViewById(R.id.psuedoFilter);
         Log.v("Movie", imageUri);
-        Glide.with(imageView.getContext())
+        final Context context = imageView.getContext();
+
+        Glide.with(context)
                 .load( imageUri)
+                .asBitmap()
                 //.centerCrop()
                 //.thumbnail(.1f)
                 // Glide V3 code
-                .listener(new RequestListener<String, GlideDrawable>() {
+                .listener(new RequestListener<String, Bitmap>() {
                     @Override
                     public boolean onException(Exception e, String model,
-                                               Target<GlideDrawable> target,
+                                               Target<Bitmap> target,
                                                boolean isFirstResource) {
                         Log.v("glideImageLoader", e.getMessage());
                         return false;
                     }
 
                     @Override
-                    public boolean onResourceReady(GlideDrawable resource, String model,
-                                                   Target<GlideDrawable> target,
+                    public boolean onResourceReady(Bitmap resource, String model,
+                                                   Target<Bitmap> target,
                                                    boolean isFromMemoryCache,
                                                    boolean isFirstResource) {
+
+
+                        Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
+                            public void onGenerated(Palette p) {
+                                // Use generated instance
+                                if (colorize) {
+                                    imageView.setColorFilter(posterImageVibrantColor, PorterDuff.Mode.DARKEN);
+                                    pseudoFilter.setBackgroundColor(posterImageVibrantColor);
+                                } else {
+                                    if (context.getClass().getSimpleName().contains("DetailsActivity")) {
+                                        posterImageVibrantColor = p.getDarkVibrantColor(Color.BLACK);
+                                    }
+                                }
+
+                            }
+                        });
+
                         loadingIndicator.setVisibility(View.GONE);
-                        if (colorize)
-                            imageView.setColorFilter(Color.LTGRAY, PorterDuff.Mode.DARKEN);
+                       /* if (colorize)
+                            imageView.setColorFilter(Color.LTGRAY, PorterDuff.Mode.DARKEN);*/
                         return false;
                     }
                 })

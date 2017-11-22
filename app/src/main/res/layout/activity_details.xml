@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ PopularMovies by bytetonight
   ~ Created for the Udacity (c) Android (c) Developer Nanodegree
   ~ This software uses a remote API kindly made accessible by
@@ -13,9 +12,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="actionCallback"
             type="android.example.com.popularmovies.handlers.ActionCallback" />
+
         <variable
             name="handlers"
             type="android.example.com.popularmovies.handlers.MediaItemHandlers" />
@@ -26,28 +27,30 @@
 
 
     </data>
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-    <!-- Static Backdrop Image -->
-    <ImageView
-        android:id="@+id/backdropImageView"
-        android:contentDescription="@{mediaItem.originalTitle}"
-        app:backdropUrl="@{mediaItem.backdropPath}"
-        tools:src="@drawable/thor_backdrop"
-        style="@style/backdrop_image" />
 
-    <ScrollView style="@style/main_scroll_view">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <!-- ScrollView 1st-Child needs LinearLayout -->
-        <LinearLayout style="@style/scrollview_first_child">
+        <!-- Static Backdrop Image -->
+        <ImageView
+            android:id="@+id/backdropImageView"
+            style="@style/backdrop_image"
+            android:contentDescription="@{mediaItem.originalTitle}"
+            app:backdropUrl="@{mediaItem.backdropPath}"
+            tools:src="@drawable/thor_backdrop" />
 
-            <!-- Main Content Container -->
-            <RelativeLayout style="@style/main_content_container">
+        <!-- Pseudo Image Filter -->
+        <View android:id="@+id/psuedoFilter" style="@style/pseudo_image_effect" />
 
-                <!-- Pseudo Image Filter -->
-                <View style="@style/pseudo_image_effect" />
+        <ScrollView style="@style/main_scroll_view">
+
+            <!-- ScrollView 1st-Child needs LinearLayout -->
+            <LinearLayout style="@style/scrollview_first_child">
+
+                <!-- Main Content Container -->
+
 
                 <!-- Inner Content Container -->
                 <LinearLayout style="@style/inner_content_container">
@@ -67,20 +70,21 @@
                             <!-- Poster Image -->
                             <ImageView
                                 android:id="@+id/posterImageView"
+                                style="@style/poster_image"
                                 android:contentDescription="@{mediaItem.originalTitle}"
                                 app:posterUrl="@{mediaItem.posterPath}"
-                                tools:src="@drawable/guardians"
-                                style="@style/poster_image" />
+                                tools:src="@drawable/guardians" />
                         </RelativeLayout>
 
 
                         <TableLayout style="@style/header_table_layout">
 
                             <TableRow>
+
                                 <TextView
+                                    style="@style/header_table_col1"
                                     android:text="@string/average_rating"
-                                    tools:text="@string/average_rating"
-                                    style="@style/header_table_col1" />
+                                    tools:text="@string/average_rating" />
 
                                 <!-- Average User Rating Indicator -->
                                 <com.github.mikephil.charting.charts.PieChart
@@ -89,15 +93,16 @@
                             </TableRow>
 
                             <TableRow>
+
                                 <TextView
                                     style="@style/header_table_col1"
                                     android:text="@string/release_date"
-                                    tools:text="@string/release_date"/>
+                                    tools:text="@string/release_date" />
 
                                 <TextView
                                     style="@style/detailsText"
                                     android:text="@{mediaItem.releaseDate}"
-                                    tools:text="2017-10-29"/>
+                                    tools:text="2017-10-29" />
                             </TableRow>
 
                             <TableRow>
@@ -105,16 +110,16 @@
                                 <android.support.v7.widget.AppCompatButton
                                     android:id="@+id/btn_add_favorite"
                                     style="@style/list_item_purchase_button"
-                                    android:visibility="gone"
                                     android:onClick="@{(v) -> actionCallback.onClickAddToFavorites(mediaItem)}"
-                                    android:text="Add to Favorites" />
+                                    android:text="Add to Favorites"
+                                    android:visibility="gone" />
 
                                 <android.support.v7.widget.AppCompatButton
                                     android:id="@+id/btn_remove_favorite"
                                     style="@style/list_item_purchase_button"
-                                    android:visibility="gone"
                                     android:onClick="@{(v) -> actionCallback.onClickRemoveFromFavorites(mediaItem)}"
-                                    android:text="Delete from Favorites" />
+                                    android:text="Delete from Favorites"
+                                    android:visibility="gone" />
                             </TableRow>
                         </TableLayout>
 
@@ -133,51 +138,53 @@
                             android:text="@{mediaItem.overview}"
                             tools:text="bla" />
 
-                        <!-- TODO add options for showing reviews and trailers -->
                     </LinearLayout>
 
 
                     <LinearLayout style="@style/details_vertical_content">
+
                         <TextView
                             style="@style/detailsText.header"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Trailers"/>
+                            android:text="Trailers" />
+
                         <ListView
-                            android:id="@+id/trailer_list_view"
+                            android:id="@+id/trailerListView"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            app:trailer_items="@{mediaItem.trailerList}"/>
+                            app:trailer_items="@{mediaItem.trailerList}" />
 
                     </LinearLayout>
 
                     <LinearLayout style="@style/details_vertical_content">
+
                         <TextView
                             style="@style/detailsText.header"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Reviews"/>
+                            android:text="Reviews" />
 
                         <LinearLayout
+                            android:id="@+id/reviewsLinearLayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
-                            app:review_items2="@{mediaItem.reviewResults.reviews}"/>
+                            app:review_items2="@{mediaItem.reviewResults.reviews}" />
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="the end"
-                            android:visibility="invisible"/>
+                            android:visibility="invisible" />
                     </LinearLayout>
 
                 </LinearLayout>
 
-            </RelativeLayout>
 
-        </LinearLayout>
+            </LinearLayout>
 
-    </ScrollView>
+        </ScrollView>
 
-</RelativeLayout>
+    </RelativeLayout>
 </layout>

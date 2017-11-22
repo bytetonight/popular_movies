@@ -31,6 +31,7 @@ import android.example.com.popularmovies.models.ReviewResults;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -43,6 +44,7 @@ import retrofit2.Response;
 public class DetailsActivity extends AppCompatActivity
         implements ActionCallback, LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final String TAG = DetailsActivity.class.getSimpleName();
     private static final int CHECK_FAVORITES_LOADER = 1;
     private static final String SELECTED_MOVIE_BUNDLE_KEY = "selectedMovie";
     private Movie selectedMovie;
@@ -169,10 +171,6 @@ public class DetailsActivity extends AppCompatActivity
         if (rowsDeleted == 1) {
             // Success presuming that a database Id is a unique primary key
             onBackPressed();
-
-
-        } else {
-            // Who knows
         }
     }
 
@@ -209,9 +207,7 @@ public class DetailsActivity extends AppCompatActivity
                         selectedMovie.setDatabaseId(databaseId);
                         // Rebind
                         binding.setMediaItem(selectedMovie);
-                        binding.invalidateAll();
-                       /* binding.backdropImageView.invalidate();
-                        binding.posterImageView.invalidate();*/
+                        //binding.invalidateAll();
 
                         setUpPieChartRating();
                         toggleAddFavorites(false);
@@ -235,6 +231,7 @@ public class DetailsActivity extends AppCompatActivity
     }
 
     private void loadMovieTrailerList(int id) {
+        Log.v(TAG, "loadMovieTrailerList");
         Call<MovieTrailerList> getMovieTrailerListCall;
         try {
             getMovieTrailerListCall = RestAdapter.getInstance(this).getTrailersListByMovieId(id, BuildConfig.TMDB_API_KEY);
@@ -245,8 +242,12 @@ public class DetailsActivity extends AppCompatActivity
                     if (response.isSuccessful()) {
                         MovieTrailerList movieTrailerList = response.body();
                         selectedMovie.setTrailerList(movieTrailerList.getResults());
-                        binding.invalidateAll();
-                        //binding.setMediaItem(selectedMovie);
+                        if (binding.hasPendingBindings()) {
+                            Log.v(TAG, "loadMovieTrailerList : requires UI refresh");
+                        }
+                        //binding.invalidateAll();
+                        //binding.trailerListView.invalidate();
+                        binding.executePendingBindings();
                         binding.notifyChange();
                     }
                 }
@@ -265,6 +266,7 @@ public class DetailsActivity extends AppCompatActivity
     }
 
     private void loadMovieReviewsList(int id) {
+        Log.v(TAG, "loadMovieReviewsList");
         Call<ReviewResults> getReviewsCall;
         try {
             getReviewsCall = RestAdapter.getInstance(this).getReviewsByMovieId(id, BuildConfig.TMDB_API_KEY);
@@ -275,8 +277,8 @@ public class DetailsActivity extends AppCompatActivity
                     if (response.isSuccessful()) {
                         ReviewResults reviewResults = response.body();
                         selectedMovie.setReviewResults(reviewResults);
-                        binding.invalidateAll();
-                        //binding.setMediaItem(selectedMovie);
+                        //binding.invalidateAll();
+                        binding.executePendingBindings();
                         binding.notifyChange();
                     }
                 }
@@ -344,8 +346,7 @@ public class DetailsActivity extends AppCompatActivity
                     int databaseIdIndex = data.getColumnIndex(FavContract.FavEntry._ID);
                     if (databaseIdIndex != -1) {
                         selectedMovie.setDatabaseId(data.getInt(databaseIdIndex));
-                        //binding.setMediaItem(selectedMovie);
-                        binding.invalidateAll();
+                        binding.executePendingBindings();
                         if (movieFoundInDb) {
                             toggleAddFavorites(false);
                         } else {
@@ -360,8 +361,6 @@ public class DetailsActivity extends AppCompatActivity
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         // Callback called when the data needs to be deleted
-        //mediaAdapter.swapCursor(null);
-
     }
 
     private void displayConnectivityNotification() {
