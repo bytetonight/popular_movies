@@ -23,7 +23,6 @@ import android.example.com.popularmovies.adapters.TrailerAdapter;
 import android.example.com.popularmovies.config.Config;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -574,7 +573,7 @@ public class Movie extends BaseObservable implements AbstractMedia, Parcelable
                             public void onGenerated(Palette p) {
                                 // Use generated instance
                                 if (colorize) {
-                                    imageView.setColorFilter(posterImageVibrantColor, PorterDuff.Mode.DARKEN);
+                                    //imageView.setColorFilter(posterImageVibrantColor, PorterDuff.Mode.DARKEN);
                                     pseudoFilter.setBackgroundColor(posterImageVibrantColor);
                                 } else {
                                     if (context.getClass().getSimpleName().contains("DetailsActivity")) {
