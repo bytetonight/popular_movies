@@ -36,4 +36,6 @@
     <string name="title_favorites">Favorites</string>
     <string name="title_details">Details</string>
     <string name="connectivity_issue">Internet / Network Connectivity not available</string>
+    <string name="error_loading_trailers">Failed to load trailers</string>
+    <string name="error_loading_reviews">Failed to load reviews</string>
 </resources>

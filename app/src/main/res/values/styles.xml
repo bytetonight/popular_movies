@@ -109,6 +109,14 @@
         <item name="android:visibility">visible</item>
     </style>
 
+    <style name="main_progress_bar" parent="@style/Widget.AppCompat.ProgressBar">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:indeterminate">true</item>
+        <item name="android:visibility">visible</item>
+    </style>
+
     <style name="poster_image">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>

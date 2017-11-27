@@ -32,6 +32,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
      * TmbdApiKey="INSERT YOUR API KEY HERE"
      */
     private static final String TAG = MainActivity.class.getName();
+    private ProgressBar mainProgressBar;
     private List<MovieListingPreference> movieListingPreferences = new ArrayList<>();
     private MediaAdapter mediaAdapter;
     private MovieResults movieResults;
@@ -67,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mainProgressBar = findViewById(R.id.main_progress_bar);
 
         prepareDiscoveryPreferences();
         moviePreference = Utils.readStringFromPreferences(this, "moviePreference");
@@ -132,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
      * Wrapper for Retrrofit Call method to load movies Data
      */
     private void listMoviesByPreference() {
+        mainProgressBar.setVisibility(View.VISIBLE);
         try {
             Call<MovieResults> discoverMoviesCall =
                     RestAdapter.getInstance(MainActivity.this)
@@ -158,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this,
                     R.string.toast_no_internet, Toast.LENGTH_SHORT).show();
         }
+        mainProgressBar.setVisibility(View.GONE);
     }
 
     @Override

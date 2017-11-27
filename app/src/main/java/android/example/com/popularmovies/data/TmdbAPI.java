@@ -43,11 +43,18 @@ public interface TmdbAPI {
      *
      * @param id     is the tmdb id of a movie acquired from Call<MovieResults>
      * @param apiKey is the key you have requested from the API owner
-     * @return
+     * @return a MovieTrailerList Object which holds the list of MovieTrailer Objects
      */
     @GET("movie/{id}/videos")
     Call<MovieTrailerList> getTrailersListByMovieId(@Path("id") int id, @Query("api_key") String apiKey);
 
+    /**
+     * Request a list of video trailers associated with the given Movie
+     *
+     * @param id     is the tmdb id of a movie acquired from Call<MovieResults>
+     * @param apiKey is the key you have requested from the API owner
+     * @return
+     */
     @GET("movie/{id}/reviews")
     Call<ReviewResults> getReviewsByMovieId(@Path("id") int id, @Query("api_key") String apiKey);
 
@@ -55,7 +62,7 @@ public interface TmdbAPI {
      * Requests data for movies by preference, ex. popular, top rated, upcoming, now playing
      *
      * @param preference
-     * @param apiKey     is the key you have requested from the API owner
+     * @param apiKey is the key you have requested from the API owner
      * @return
      */
     @GET("movie/{preference}")

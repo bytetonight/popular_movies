@@ -32,21 +32,7 @@ public class FavoritesActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>{
 
 
-    // Useful information
-    // https://medium.com/@cassioso/a-strategy-to-secure-your-api-keys-using-gradle-b9c107272860
-    // https://developers.themoviedb.org/3/discover/movie-discover ... sort_by ... popularity !
-    // https://futurestud.io/tutorials/glide-placeholders-fade-animations
-
-    /**
-     * Requires a file named keystore.properties to exist within the project root
-     * having the following content
-     * TmbdApiKey="INSERT YOUR API KEY HERE"
-     */
     private static final String TAG = FavoritesActivity.class.getName();
-
-    /**
-     * Identifier for the product data loader
-     */
     private static final int MOVIES_LOADER_ID = 0;
     private static final int COUNT_LOADER_ID = 1;
 
@@ -97,8 +83,8 @@ public class FavoritesActivity extends AppCompatActivity implements
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         // Kick off the loader to get the amount of records in the database
         getLoaderManager().initLoader(COUNT_LOADER_ID, null, this);
-        // When {@link onLoadFinished} tells us that above loader has completed
-        // We kick off the actual product loader
+        /* When {@link onLoadFinished} tells us that above loader has completed
+         We kick off the actual product loader */
     }
 
     @Override
@@ -119,97 +105,7 @@ public class FavoritesActivity extends AppCompatActivity implements
 
 
 
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.listing_preferences:
-                showMoviePrefsDialog();
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }*/
-
-
-    /**
-     * Use hardcoded string-arrays to build a key -> value style List for the Spinner
-     */
-    /*private void prepareDiscoveryPreferences() {
-        String[] prefKeysArray = getResources().getStringArray(R.array.movie_preferences_values);
-        String[] prefValuesArray = getResources().getStringArray(R.array.movie_preference_name);
-        for (int current = 0; current < prefKeysArray.length; ++current) {
-            movieListingPreferences.add(new MovieListingPreference(prefKeysArray[current],
-                    prefValuesArray[current]));
-        }
-    }
-
-    private void showMoviePrefsDialog() {
-
-        Log.v("###", "showMoviePrefsDialog");
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        LayoutInflater inflater = this.getLayoutInflater();
-        final View view = inflater.inflate(R.layout.preferences_dialog, null);
-
-
-        Spinner listingPrefsSpinner = view.findViewById(R.id.movieDiscoveryPreference);
-
-        listingPrefsSpinner.setOnItemSelectedListener(sectionSelectListener);
-
-        ArrayAdapter<MovieListingPreference> sectionArrayAdapter =
-                new ArrayAdapter<>(FavoritesActivity.this,
-                        android.R.layout.simple_spinner_dropdown_item, movieListingPreferences);
-        sectionArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        listingPrefsSpinner.setAdapter(sectionArrayAdapter);
-        dialogBuilder.setView(view);
-        listingPrefsSpinner.setSelection(moviePreferencePosition);
-        dialogBuilder.setPositiveButton(R.string.dlg_btn_ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int clickedButton) {
-
-            }
-        });
-        dialogBuilder.setNegativeButton(R.string.dlg_btn_cancel,
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int clickedButton) {
-
-                    }
-                });
-        AlertDialog b = dialogBuilder.create();
-        b.show();
-    }
-
-    private AdapterView.OnItemSelectedListener sectionSelectListener =
-            new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view,
-                                           int position, long id) {
-                    if (moviePreferencePosition == position)
-                        return;
-                    MovieListingPreference currentItem =
-                            (MovieListingPreference) parent.getItemAtPosition(position);
-                    Utils.writeStringToPreferences(FavoritesActivity.this,
-                            "moviePreference", currentItem.getKey());
-                    Utils.writeStringToPreferences(FavoritesActivity.this,
-                            "moviePreferenceNumeric", String.valueOf(position));
-                    moviePreferencePosition = position;
-                    moviePreference = currentItem.getKey();
-                    listMoviesByPreference();
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-
-                }
-            };
-*/
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         Loader<Cursor> returnCursor = null;

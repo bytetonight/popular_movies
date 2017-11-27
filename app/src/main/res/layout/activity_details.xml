@@ -186,5 +186,9 @@
 
         </ScrollView>
 
+        <!--<ProgressBar
+            android:id="@+id/main_loading_indicator"
+            style="@style/poster_progress_bar" />-->
+
     </RelativeLayout>
 </layout>

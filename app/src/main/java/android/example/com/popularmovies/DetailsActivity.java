@@ -18,7 +18,6 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.example.com.popularmovies.adapters.RestAdapter;
-import android.example.com.popularmovies.adapters.TrailerAdapter;
 import android.example.com.popularmovies.data.PieChartWrapper;
 import android.example.com.popularmovies.database.FavContract;
 import android.example.com.popularmovies.databinding.ActivityDetailsBinding;
@@ -50,7 +49,6 @@ public class DetailsActivity extends AppCompatActivity
     private Movie selectedMovie;
     private PieChartWrapper pieChartWrapper;
     private ActivityDetailsBinding binding;
-    private TrailerAdapter trailerAdapter;
     private int databaseId = -1;
     private boolean movieFoundInDb = false;
 
@@ -207,7 +205,6 @@ public class DetailsActivity extends AppCompatActivity
                         selectedMovie.setDatabaseId(databaseId);
                         // Rebind
                         binding.setMediaItem(selectedMovie);
-                        //binding.invalidateAll();
 
                         setUpPieChartRating();
                         toggleAddFavorites(false);
@@ -245,8 +242,6 @@ public class DetailsActivity extends AppCompatActivity
                         if (binding.hasPendingBindings()) {
                             Log.v(TAG, "loadMovieTrailerList : requires UI refresh");
                         }
-                        //binding.invalidateAll();
-                        //binding.trailerListView.invalidate();
                         binding.executePendingBindings();
                         binding.notifyChange();
                     }
@@ -255,7 +250,7 @@ public class DetailsActivity extends AppCompatActivity
                 @Override
                 public void onFailure(Call<MovieTrailerList> call, Throwable t) {
                     Toast.makeText(DetailsActivity.this,
-                            getString(R.string.toast_load_movies_fail) + t.getMessage(),
+                            getString(R.string.error_loading_trailers) + t.getMessage(),
                             Toast.LENGTH_SHORT).show();
                 }
             });
@@ -286,7 +281,7 @@ public class DetailsActivity extends AppCompatActivity
                 @Override
                 public void onFailure(Call<ReviewResults> call, Throwable t) {
                     Toast.makeText(DetailsActivity.this,
-                            getString(R.string.toast_load_movies_fail) + t.getMessage(),
+                            getString(R.string.error_loading_reviews) + t.getMessage(),
                             Toast.LENGTH_SHORT).show();
                 }
             });
