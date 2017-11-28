@@ -20,7 +20,7 @@ import android.databinding.DataBindingUtil;
 import android.example.com.popularmovies.adapters.RestAdapter;
 import android.example.com.popularmovies.data.PieChartWrapper;
 import android.example.com.popularmovies.database.FavContract;
-import android.example.com.popularmovies.databinding.ActivityDetailsBinding;
+import android.example.com.popularmovies.databinding.ActivityDetailsConstraintBinding;
 import android.example.com.popularmovies.exceptions.NoConnectionException;
 import android.example.com.popularmovies.handlers.ActionCallback;
 import android.example.com.popularmovies.handlers.MediaItemHandlers;
@@ -48,7 +48,7 @@ public class DetailsActivity extends AppCompatActivity
     private static final String SELECTED_MOVIE_BUNDLE_KEY = "selectedMovie";
     private Movie selectedMovie;
     private PieChartWrapper pieChartWrapper;
-    private ActivityDetailsBinding binding;
+    private ActivityDetailsConstraintBinding binding;
     private int databaseId = -1;
     private boolean movieFoundInDb = false;
 
@@ -95,7 +95,7 @@ public class DetailsActivity extends AppCompatActivity
 
 
 
-        binding = DataBindingUtil.setContentView(DetailsActivity.this, R.layout.activity_details);
+        binding = DataBindingUtil.setContentView(DetailsActivity.this, R.layout.activity_details_constraint);
         binding.setMediaItem(selectedMovie);
         binding.setHandlers(new MediaItemHandlers());
         binding.setActionCallback(this);

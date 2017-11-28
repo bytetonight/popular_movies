@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ PopularMovies by bytetonight
+  ~ Created for the Udacity (c) Android (c) Developer Nanodegree
+  ~ This software uses a remote API kindly made accessible by
+  ~ https://www.themoviedb.org/
+  ~
+  ~ Copyright (c) 2017.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="actionCallback"
+            type="android.example.com.popularmovies.handlers.ActionCallback" />
+
+        <variable
+            name="handlers"
+            type="android.example.com.popularmovies.handlers.MediaItemHandlers" />
+
+        <variable
+            name="mediaItem"
+            type="android.example.com.popularmovies.models.Movie" />
+
+
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Static Backdrop Image -->
+        <ImageView
+            android:id="@+id/backdropImageView"
+            style="@style/backdrop_image"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:contentDescription="@{mediaItem.originalTitle}"
+            app:backdropUrl="@{mediaItem.backdropPath}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/thor_backdrop" />
+
+
+        <View
+            android:id="@+id/pseudoFilter"
+            style="@style/pseudo_image_effect"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ScrollView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:fillViewport="true">
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/relativeLayout1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <android.support.constraint.Guideline
+                    android:id="@+id/guidelineLeft"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_begin="16dp" />
+
+                <android.support.constraint.Guideline
+                    android:id="@+id/guidelineRight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_end="16dp" />
+
+                <ImageView
+                    android:id="@+id/posterImageView"
+                    style="@style/poster_image"
+                    android:layout_width="154dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginTop="8dp"
+                    android:contentDescription="@{mediaItem.originalTitle}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.01"
+                    app:layout_constraintStart_toStartOf="@+id/guidelineLeft"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:posterUrl="@{mediaItem.posterPath}"
+                    tools:src="@drawable/guardians" />
+
+                <!-- Indeterminate Poster Pseudo Progress -->
+                <ProgressBar
+                    android:id="@+id/loading_indicator"
+                    style="@style/poster_progress_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@id/posterImageView"
+                    app:layout_constraintEnd_toEndOf="@id/posterImageView"
+                    app:layout_constraintStart_toStartOf="@id/posterImageView"
+                    app:layout_constraintTop_toTopOf="@id/posterImageView" />
+
+
+                <TextView
+                    android:id="@+id/textView"
+                    style="@style/header_table_col1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/average_rating"
+                    app:layout_constraintBottom_toBottomOf="@+id/chart"
+
+                    app:layout_constraintLeft_toRightOf="@+id/posterImageView"
+                    app:layout_constraintTop_toTopOf="@id/chart"
+                    tools:text="@string/average_rating" />
+
+                <!-- Average User Rating Indicator -->
+                <com.github.mikephil.charting.charts.PieChart
+                    android:id="@+id/chart"
+                    style="@style/average_rating_chart"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintEnd_toStartOf="@+id/guidelineRight"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <TextView
+                    android:id="@+id/textView2"
+                    style="@style/header_table_col1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/release_date"
+                    app:layout_constraintStart_toEndOf="@+id/posterImageView"
+                    app:layout_constraintTop_toBottomOf="@+id/chart"
+                    tools:text="@string/release_date" />
+
+                <TextView
+                    android:id="@+id/textView3"
+                    style="@style/detailsText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@{mediaItem.releaseDate}"
+                    app:layout_constraintEnd_toStartOf="@+id/guidelineRight"
+                    app:layout_constraintTop_toBottomOf="@+id/chart"
+                    tools:text="2017-10-29" />
+
+
+                <android.support.v7.widget.AppCompatButton
+                    android:id="@+id/btn_add_favorite"
+                    style="@style/list_item_purchase_button"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:onClick="@{(v) -> actionCallback.onClickAddToFavorites(mediaItem)}"
+                    android:text="Add to Favorites"
+                    android:visibility="invisible"
+                    app:layout_constraintEnd_toStartOf="@+id/guidelineRight"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toEndOf="@+id/posterImageView"
+                    app:layout_constraintTop_toBottomOf="@+id/textView2"
+                    tools:text="Add to Favorites" />
+
+                <android.support.v7.widget.AppCompatButton
+                    android:id="@+id/btn_remove_favorite"
+                    style="@style/list_item_purchase_button"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:onClick="@{(v) -> actionCallback.onClickRemoveFromFavorites(mediaItem)}"
+                    android:text="Delete from Favorites"
+                    android:visibility="invisible"
+                    app:layout_constraintEnd_toStartOf="@+id/guidelineRight"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toEndOf="@+id/posterImageView"
+                    app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+
+                <!-- Vertical Content -->
+
+
+                <TextView
+                    android:id="@+id/textView4"
+                    style="@style/detailsText.header"
+                    android:layout_width="0dp"
+
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@{mediaItem.originalTitle}"
+                    app:layout_constraintEnd_toStartOf="@+id/guidelineRight"
+                    app:layout_constraintStart_toStartOf="@+id/guidelineLeft"
+                    app:layout_constraintTop_toBottomOf="@+id/posterImageView"
+                    tools:text="Original Title" />
+
+                <TextView
+                    android:id="@+id/textView5"
+                    style="@style/detailsText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@{mediaItem.overview}"
+                    app:layout_constraintEnd_toStartOf="@+id/guidelineRight"
+                    app:layout_constraintStart_toStartOf="@+id/guidelineLeft"
+                    app:layout_constraintTop_toBottomOf="@+id/textView4"
+                    tools:text="bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla " />
+
+
+                <TextView
+                    android:id="@+id/textView6"
+                    style="@style/detailsText.header"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Trailers"
+                    app:layout_constraintEnd_toStartOf="@+id/guidelineRight"
+                    app:layout_constraintStart_toStartOf="@+id/guidelineLeft"
+                    app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+                <ListView
+                    android:id="@+id/trailerListView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toStartOf="@+id/guidelineRight"
+                    app:layout_constraintStart_toStartOf="@+id/guidelineLeft"
+                    app:layout_constraintTop_toBottomOf="@+id/textView6"
+                    app:trailer_items="@{mediaItem.trailerList}" />
+
+
+                <TextView
+                    android:id="@+id/textViewReviewsTitle"
+                    style="@style/detailsText.header"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Reviews"
+                    app:layout_constraintEnd_toStartOf="@+id/guidelineRight"
+                    app:layout_constraintStart_toEndOf="@+id/trailerListView"
+                    app:layout_constraintStart_toStartOf="@+id/guidelineLeft"
+                    app:layout_constraintTop_toBottomOf="@+id/trailerListView" />
+
+                <LinearLayout
+                    android:id="@+id/reviewsLinearLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toStartOf="@+id/guidelineRight"
+                    app:layout_constraintStart_toEndOf="@+id/textViewReviewsTitle"
+                    app:layout_constraintStart_toStartOf="@+id/guidelineLeft"
+                    app:layout_constraintTop_toBottomOf="@+id/textViewReviewsTitle"
+                    app:review_items2="@{mediaItem.reviewResults.reviews}" />
+
+                <!--<TextView
+                    android:id="@+id/textView8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="the end"
+                    android:visibility="invisible" />-->
+            </android.support.constraint.ConstraintLayout>
+        </ScrollView>
+
+
+        <!--<ProgressBar
+            android:id="@+id/main_loading_indicator"
+            style="@style/poster_progress_bar" />-->
+
+    </android.support.constraint.ConstraintLayout>
+
+</layout>

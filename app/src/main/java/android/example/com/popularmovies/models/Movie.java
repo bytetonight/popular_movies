@@ -23,6 +23,7 @@ import android.example.com.popularmovies.adapters.TrailerAdapter;
 import android.example.com.popularmovies.config.Config;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -532,6 +533,12 @@ public class Movie extends BaseObservable implements AbstractMedia, Parcelable
 
 
     private static int posterImageVibrantColor = -1;
+
+    @Bindable
+    public static int getPosterImageVibrantColor() {
+        return posterImageVibrantColor;
+    }
+
     /**
      * This is the actual loading section for above 2 methods
      * Why I did it this way ?
@@ -539,20 +546,22 @@ public class Movie extends BaseObservable implements AbstractMedia, Parcelable
      *
      * @param imageView is the View to load the image into
      * @param imageUri is the remote resource location of the image
-     * @param colorize determines whether I'm loading a poster or a backdrop image ... sort of
+     * @param isBackdrop determines whether I'm loading a poster or a backdrop image ... sort of
      */
-    private static void glideImageLoader(final ImageView imageView, String imageUri, final boolean colorize) {
+    private static void glideImageLoader(final ImageView imageView, String imageUri, final boolean isBackdrop) {
         final ProgressBar loadingIndicator = imageView.getRootView().findViewById(R.id.loading_indicator);
-        final View pseudoFilter = imageView.getRootView().findViewById(R.id.psuedoFilter);
+        final View pseudoFilter = imageView.getRootView().findViewById(R.id.pseudoFilter);
         Log.v("Movie", imageUri);
         final Context context = imageView.getContext();
 
+        // Glide V3 code
         Glide.with(context)
                 .load( imageUri)
                 .asBitmap()
+                .dontAnimate()
                 //.centerCrop()
                 //.thumbnail(.1f)
-                // Glide V3 code
+
                 .listener(new RequestListener<String, Bitmap>() {
                     @Override
                     public boolean onException(Exception e, String model,
@@ -572,6 +581,36 @@ public class Movie extends BaseObservable implements AbstractMedia, Parcelable
                         Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
                             public void onGenerated(Palette p) {
                                 // Use generated instance
+                                if (isBackdrop) {
+                                    //imageView.setColorFilter(posterImageVibrantColor, PorterDuff.Mode.DARKEN);
+                                    pseudoFilter.setBackgroundColor(posterImageVibrantColor);
+                                } else {
+                                    if (context.getClass().getSimpleName().contains("DetailsActivity")) {
+                                        posterImageVibrantColor = p.getDominantColor(Color.BLACK);
+                                    }
+                                }
+
+                            }
+                        });
+
+                        loadingIndicator.setVisibility(View.GONE);
+                        if (isBackdrop)
+                            imageView.setColorFilter(Color.LTGRAY, PorterDuff.Mode.DARKEN);
+                        return false;
+                    }
+                })
+                .into(imageView);
+
+        /*Glide.with(context)
+                .asBitmap()
+                .load( imageUri)
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                        imageView.setImageBitmap(resource);
+                        Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
+                            public void onGenerated(Palette p) {
+                                // Use generated instance
                                 if (colorize) {
                                     //imageView.setColorFilter(posterImageVibrantColor, PorterDuff.Mode.DARKEN);
                                     pseudoFilter.setBackgroundColor(posterImageVibrantColor);
@@ -585,12 +624,8 @@ public class Movie extends BaseObservable implements AbstractMedia, Parcelable
                         });
 
                         loadingIndicator.setVisibility(View.GONE);
-                       /* if (colorize)
-                            imageView.setColorFilter(Color.LTGRAY, PorterDuff.Mode.DARKEN);*/
-                        return false;
                     }
-                })
-                .into(imageView);
+                });*/
     }
 
     public void writeToParcel(Parcel dest, int flags) {

@@ -42,7 +42,7 @@
             tools:src="@drawable/thor_backdrop" />
 
         <!-- Pseudo Image Filter -->
-        <View android:id="@+id/psuedoFilter" style="@style/pseudo_image_effect" />
+        <View android:id="@+id/pseudoFilter" style="@style/pseudo_image_effect" />
 
         <ScrollView style="@style/main_scroll_view">
 
